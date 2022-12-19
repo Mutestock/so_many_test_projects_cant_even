@@ -16,7 +16,7 @@
       "shell": {
         "all": false,
         "open": true
-      }
+      } 
     },
     "bundle": {
       "active": true,
@@ -42,7 +42,7 @@
         "providerShortName": null,
         "signingIdentity": null
       },
-      "resources": [],
+      "resources": ["rocks"],
       "shortDescription": "",
       "targets": "all",
       "windows": {
