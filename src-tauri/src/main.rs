@@ -10,16 +10,9 @@ mod ui;
 
 use commands::rocks_basic_commands::*;
 
-// Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-#[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
-}
-
 fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
-            greet,
             ping,
             cmd_rocks_get,
             cmd_rocks_put

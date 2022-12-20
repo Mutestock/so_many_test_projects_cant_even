@@ -1,4 +1,3 @@
-#![allow(dead_code)]
 
 use rocksdb::{DBWithThreadMode, Error, SingleThreaded, DB};
 use tauri::AppHandle;

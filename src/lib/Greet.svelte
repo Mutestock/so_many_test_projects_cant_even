@@ -1,19 +1,12 @@
 <script>
   import { invoke } from "@tauri-apps/api/tauri";
 
-  let name = "";
-  let greetMsg = "";
   let pingRes = false;
   let rocksGetKeyInput = "";
   let rocksPutKeyInput = "";
   let rocksPutValueInput = "";
   let rocksGetOutput = "";
   let rocksSetOutput = "";
-
-  async function greet() {
-    // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
-    greetMsg = await invoke("greet", { name });
-  }
 
   async function pingRocks() {
     pingRes = await invoke("ping", {});
