@@ -1,5 +1,6 @@
 <script>
   import { invoke } from "@tauri-apps/api/tauri";
+  import { onMount } from "svelte";
 
   let pingRes = false;
   let rocksGetKeyInput = "";
@@ -24,6 +25,11 @@
       key: rocksGetKeyInput,
     });
   }
+
+  onMount(async () => {
+    await pingRocks();
+  });
+ 
 </script>
 
 <div>
@@ -54,7 +60,7 @@
     <p>Get output: {rocksGetOutput}</p>
   </div>
   <div class="row">
-    <p>misc:</p>
+    <p>misc: </p>
     <p>Ping res: {pingRes}</p>
   </div>
 </div>
