@@ -5,17 +5,20 @@
 
 mod commands;
 mod connection;
+mod errors;
+mod model;
 mod state;
 mod ui;
-mod model;
-mod errors;
 
 use commands::rocks_basic_commands::*;
+use ui::menu::{create_menu, handle_menu_event};
 
-use crate::commands::node_commands::{cmd_new_node, cmd_append_comment_to_node};
+use crate::commands::node_commands::{cmd_append_comment_to_node, cmd_new_node};
 
 fn main() {
     tauri::Builder::default()
+        .menu(create_menu())
+        .on_menu_event(|event| handle_menu_event(event))
         .invoke_handler(tauri::generate_handler![
             ping,
             cmd_rocks_get,
