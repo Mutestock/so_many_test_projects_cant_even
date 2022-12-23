@@ -52,7 +52,7 @@
         "providerShortName": null,
         "signingIdentity": null
       },
-      "resources": ["rocks"],
+      "resources": ["rocks", "sqlite"],
       "shortDescription": "",
       "targets": "all",
       "windows": {
