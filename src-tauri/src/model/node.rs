@@ -35,7 +35,7 @@ impl Node {
             date_modified: Local::now(),
             image_paths: None,
             primary_image_path: None,
-            node_category: node_category,
+            node_category,
         })
     }
 
@@ -71,7 +71,10 @@ impl ModelCommon<&str> for Node {
     }
 
     fn create(&self, connector: SqliteConnection) {
-        todo!()
+        connector
+            .connect()
+            .expect("Could not create a new Node with sqlite")
+            .execute(, ());
     }
 
     fn read(t: &str, connector: SqliteConnection) -> Node {
