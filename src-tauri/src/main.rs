@@ -13,7 +13,7 @@ mod model;
 mod state;
 mod ui;
 
-use commands::{node_commands::*, rocks_basic_commands::*, sqlite_commands::*};
+use commands::{node_commands::*, sqlite_commands::*};
 use connection::{
     connection_common::MindmapConnector,
     sqlite_connection::{init_pop, SQLITE_CONNECTION},
@@ -25,9 +25,6 @@ fn main() {
         .menu(create_menu())
         .on_menu_event(|event| handle_menu_event(event))
         .invoke_handler(tauri::generate_handler![
-            ping,
-            cmd_rocks_get,
-            cmd_rocks_put,
             cmd_new_node,
             cmd_append_comment_to_node,
             cmd_sqlite_ping
