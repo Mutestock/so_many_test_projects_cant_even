@@ -12,20 +12,12 @@
   },
   "tauri": {
     "allowlist": {
-      "all": false,
-      "fs":{
-        "readDir": true,
-        "readFile": true,
-        "renameFile": true,
-        "writeFile": true
+      "fs": {
+        "all": true,
+        "scope": ["$APPDATA/*", "$APP/*"]
       },
-      "shell": {
-        "all": false,
-        "open": true
-      } ,
-      "http":{
-        "request": true,
-        "scope": []
+      "path":{
+        "all": true
       }
     },
     "bundle": {
@@ -52,7 +44,7 @@
         "providerShortName": null,
         "signingIdentity": null
       },
-      "resources": ["rocks", "sqlite"],
+      "resources": [],
       "shortDescription": "",
       "targets": "all",
       "windows": {

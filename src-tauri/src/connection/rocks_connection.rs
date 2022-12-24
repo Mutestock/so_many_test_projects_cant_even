@@ -13,8 +13,7 @@ pub fn connect(handle: &AppHandle) -> Result<DBWithThreadMode<SingleThreaded>, E
 }
 
 pub fn rocks_get(handle: &AppHandle, key: &str) -> Result<String, Error> {
-    let db = connect(handle)?;
-    Ok(match db.get(key) {
+    Ok(match connect(handle)?.get(key) {
         Ok(Some(value)) => String::from_utf8(value).unwrap(),
         Ok(None) => "".to_owned(),
         Err(e) => format!("Error occurred: {}", e),
@@ -22,16 +21,14 @@ pub fn rocks_get(handle: &AppHandle, key: &str) -> Result<String, Error> {
 }
 
 pub fn rocks_put(handle: &AppHandle, key: &str, value: &str) -> Result<bool, Error> {
-    let db = connect(handle)?;
-    Ok(match db.put(key, value) {
+    Ok(match connect(handle)?.put(key, value) {
         Ok(_) => true,
         Err(_) => false,
     })
 }
 
 pub fn rocks_key_exists(handle: &AppHandle, key: &str) -> Result<bool, Error> {
-    let db = connect(handle)?;
-    Ok(db.key_may_exist(key))
+    Ok(connect(handle)?.key_may_exist(key))
 }
 
 pub fn rocks_put_on_non_duplicate(

@@ -1,7 +1,12 @@
-use rusqlite::{Connection, Error};
+use crate::connection::{sqlite_connection::SQLITE_CONNECTION, connection_common::MindmapConnector};
+use tauri::{InvokeError, AppHandle};
 
-
-pub fn get_sqlite_connection(&self) -> Result<Connection, Error> {
-    
+#[tauri::command]
+pub async fn cmd_sqlite_ping() -> Result<bool, InvokeError> {        
+    Ok(match SQLITE_CONNECTION.connect() {
+        Ok(_) => true,
+        Err(_) => false,
+    })
 }
+
 

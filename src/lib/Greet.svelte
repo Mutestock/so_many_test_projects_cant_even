@@ -2,7 +2,8 @@
   import { invoke } from "@tauri-apps/api/tauri";
   import { onMount } from "svelte";
 
-  let pingRes = false;
+  let rocksPingRes = false;
+  let sqlitePingRes = false;
   let rocksGetKeyInput = "";
   let rocksPutKeyInput = "";
   let rocksPutValueInput = "";
@@ -10,7 +11,11 @@
   let rocksSetOutput = "";
 
   async function pingRocks() {
-    pingRes = await invoke("ping", {});
+    rocksPingRes = await invoke("ping", {});
+  }
+
+  async function pingSqlite() {
+    sqlitePingRes = await invoke("cmd_sqlite_ping", {})
   }
 
   async function rocksPut() {
@@ -28,6 +33,7 @@
 
   onMount(async () => {
     await pingRocks();
+    await pingSqlite();
   });
  
 </script>
@@ -61,6 +67,7 @@
   </div>
   <div class="row">
     <p>misc: </p>
-    <p>Ping res: {pingRes}</p>
+    <p>Rocks ping res: {rocksPingRes}</p>
+    <p>Sqlite ping res: {sqlitePingRes}</p>
   </div>
 </div>

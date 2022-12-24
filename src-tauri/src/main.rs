@@ -3,6 +3,9 @@
     windows_subsystem = "windows"
 )]
 
+#[macro_use]
+extern crate lazy_static;
+
 mod commands;
 mod connection;
 mod errors;
@@ -10,10 +13,12 @@ mod model;
 mod state;
 mod ui;
 
-use commands::rocks_basic_commands::*;
+use commands::{node_commands::*, rocks_basic_commands::*, sqlite_commands::*};
+use connection::{
+    connection_common::MindmapConnector,
+    sqlite_connection::{init_pop, SQLITE_CONNECTION},
+};
 use ui::menu::{create_menu, handle_menu_event};
-
-use crate::commands::node_commands::{cmd_append_comment_to_node, cmd_new_node};
 
 fn main() {
     tauri::Builder::default()
@@ -24,12 +29,14 @@ fn main() {
             cmd_rocks_get,
             cmd_rocks_put,
             cmd_new_node,
-            cmd_append_comment_to_node
+            cmd_append_comment_to_node,
+            cmd_sqlite_ping
         ])
-        .setup(|app| {
-            app.path_resolver()
-                .resolve_resource("rocks")
-                .expect("Couldn't get rocks resource");
+        .setup(|_| {
+            SQLITE_CONNECTION
+                .create_dir_path()
+                .expect("Directory path creation for sqlite failed");
+            init_pop().expect("Init pop failed");
             Ok(())
         })
         .run(tauri::generate_context!())
