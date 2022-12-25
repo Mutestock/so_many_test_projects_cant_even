@@ -23,6 +23,9 @@ impl NodeComment {
             date_modified: Local::now(),
         }
     }
+    pub fn uuid(&self) -> &str{
+        &self.uuid
+    }
 }
 
 impl ModelCommon<&str> for NodeComment {

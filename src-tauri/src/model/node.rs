@@ -30,6 +30,9 @@ impl Node {
     pub fn as_json(&self) -> Result<String, serde_json::Error> {
         serde_json::to_string(&self)
     }
+    pub fn node_category(&self) -> &str {
+        &self.node_category
+    }
 }
 
 impl ModelCommon<&str> for Node {
