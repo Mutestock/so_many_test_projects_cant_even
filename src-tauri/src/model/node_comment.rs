@@ -26,7 +26,7 @@ impl NodeComment {
 }
 
 impl ModelCommon<&str> for NodeComment {
-    fn init_script(connector: SqliteConnection) -> Result<(), rusqlite::Error> {
+    fn init_script(connector: &SqliteConnection) -> Result<(), rusqlite::Error> {
         connector.connect()?.execute(
             concat!(
                 "CREATE TABLE IF NOT EXISTS NodeComment (",

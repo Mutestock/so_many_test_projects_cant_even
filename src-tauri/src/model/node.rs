@@ -1,13 +1,11 @@
-use chrono::{DateTime, Local, TimeZone, FixedOffset};
-use rusqlite::Row;
+use chrono::{DateTime, Local};
 use serde::{Deserialize, Serialize};
 
 use crate::connection::connection_common::MindmapConnector;
 use crate::connection::sqlite_connection::SqliteConnection;
-use crate::model::{model_common::ModelCommon};
+use crate::model::model_common::ModelCommon;
 
 use super::model_common::DateTimeRusqlite;
-
 
 #[derive(Serialize, Deserialize)]
 pub struct Node {
@@ -35,7 +33,7 @@ impl Node {
 }
 
 impl ModelCommon<&str> for Node {
-    fn init_script(connector: SqliteConnection) -> Result<(), rusqlite::Error> {
+    fn init_script(connector: &SqliteConnection) -> Result<(), rusqlite::Error> {
         connector.connect()?.execute(
             concat!(
                 "CREATE TABLE IF NOT EXISTS Node(",
@@ -69,21 +67,18 @@ impl ModelCommon<&str> for Node {
     }
 
     fn read(t: &str, connector: SqliteConnection) -> Result<Node, rusqlite::Error> {
-        let connection = connector
-            .connect()?;
+        let connection = connector.connect()?;
         let mut stmt = connection
             .prepare("SELECT date_added, date_modified, primary_image_path, category_name FROM Node WHERE name = ?1")?;
 
-        let mut some_iter = stmt.query_map([t], |row|{
-            Ok(
-                Node {
-                    name: t.to_owned(),
-                    date_added: DateTime::<Local>::from_row(row, 0),
-                    date_modified: DateTime::<Local>::from_row(row, 1),
-                    primary_image_path: Some(row.get(2)?),
-                    node_category: row.get(3)?, 
-                }
-            )
+        let mut some_iter = stmt.query_map([t], |row| {
+            Ok(Node {
+                name: t.to_owned(),
+                date_added: DateTime::<Local>::from_row(row, 0),
+                date_modified: DateTime::<Local>::from_row(row, 1),
+                primary_image_path: Some(row.get(2)?),
+                node_category: row.get(3)?,
+            })
         })?;
         Ok(some_iter.next().unwrap()?)
     }

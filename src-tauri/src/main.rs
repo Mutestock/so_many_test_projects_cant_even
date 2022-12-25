@@ -14,9 +14,8 @@ mod state;
 mod ui;
 
 use commands::{node_commands::*, sqlite_commands::*};
-use connection::{connection_common::MindmapConnector, sqlite_connection::SQLITE_CONNECTION};
-use model::{
-    model_common::ModelCommon, node::Node, node_category::NodeCategory, node_comment::NodeComment,
+use connection::{
+    connection_common::MindmapConnector, initialize, sqlite_connection::SQLITE_CONNECTION,
 };
 use ui::menu::{create_menu, handle_menu_event};
 
@@ -35,12 +34,7 @@ fn main() {
                 .create_dir_path()
                 .expect("Directory path creation for sqlite failed");
 
-            NodeCategory::init_script(SQLITE_CONNECTION.to_owned())
-                .expect("NodeCategory Init script failed");
-            Node::init_script(SQLITE_CONNECTION.to_owned())
-                .expect("Node Init script failed");
-            NodeComment::init_script(SQLITE_CONNECTION.to_owned())
-                .expect("NodeComment Init script failed");
+            initialize(SQLITE_CONNECTION.to_owned()).expect("Initialization failed");
             Ok(())
         })
         .run(tauri::generate_context!())

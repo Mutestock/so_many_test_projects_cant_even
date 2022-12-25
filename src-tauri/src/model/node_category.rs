@@ -35,7 +35,7 @@ pub struct NodeCategory {
 }
 
 impl ModelCommon<&str> for NodeCategory {
-    fn init_script(connector: SqliteConnection) -> Result<(), rusqlite::Error> {
+    fn init_script(connector: &SqliteConnection) -> Result<(), rusqlite::Error> {
         connector
             .connect()?
             .execute(concat!(
