@@ -4,35 +4,29 @@
 
   let rocksPingRes = false;
   let sqlitePingRes = false;
-  let rocksGetKeyInput = "";
-  let rocksPutKeyInput = "";
-  let rocksPutValueInput = "";
-  let rocksGetOutput = "";
-  let rocksSetOutput = "";
-
-  async function pingRocks() {
-    rocksPingRes = await invoke("ping", {});
-  }
+  let sqliteSimpleInsertSucceeded = false;
+  let sqliteSimpleRes = "";
 
   async function pingSqlite() {
-    sqlitePingRes = await invoke("cmd_sqlite_ping", {})
+    sqlitePingRes = await invoke("cmd_sqlite_ping", {});
   }
 
-  async function rocksPut() {
-    rocksSetOutput = await invoke("cmd_rocks_put", {
-      key: rocksPutKeyInput,
-      value: rocksPutValueInput,
-    });
+  async function sqliteInsertSimple() {
+    sqliteSimpleInsertSucceeded = await invoke("cmd_new_node",
+      {
+        "nodeCategory": "event",
+        "name": "cake"
+      }
+    );
   }
 
-  async function rocksGet() {
-    rocksGetOutput = await invoke("cmd_rocks_get", {
-      key: rocksGetKeyInput,
-    });
+  async function sqliteReadSimple() {
+    sqliteSimpleRes = await invoke("cmd_sqlite_read", {
+      "name": "cake"
+    }).then(x=>x.json());
   }
 
   onMount(async () => {
-    await pingRocks();
     await pingSqlite();
   });
  
@@ -40,34 +34,18 @@
 
 <div>
   <div class="row">
-    <button on:click={pingRocks}> Do the ping</button>
+    <button on:click={pingSqlite}> Do the ping</button>
   </div>
   <div class="row">
-    <button on:click={rocksPut}>Rocks put</button>
-    <input
-      id="rocks-put-key-input"
-      bind:value={rocksPutKeyInput}
-      placeholder="Rocks Put Key"
-    />
-    <input
-      id="rocks-put-value-input"
-      bind:value={rocksPutValueInput}
-      placeholder="Rocks Put Value"
-    />
-    <p>Put output: {rocksSetOutput}</p>
+    <button on:click={sqliteInsertSimple}>Sqlite Insert</button>
+    <p>Success: {sqliteSimpleInsertSucceeded}</p>
   </div>
   <div class="row">
-    <button on:click={rocksGet}>Rocks get</button>
-    <input
-      id="rocks-get-key-input"
-      bind:value={rocksGetKeyInput}
-      placeholder="Rocks get key"
-    />
-    <p>Get output: {rocksGetOutput}</p>
+    <button on:click={sqliteReadSimple}>Sqlite Read</button>
+    <p>Get output: {sqliteSimpleRes}</p>
   </div>
   <div class="row">
     <p>misc: </p>
-    <p>Rocks ping res: {rocksPingRes}</p>
     <p>Sqlite ping res: {sqlitePingRes}</p>
   </div>
 </div>

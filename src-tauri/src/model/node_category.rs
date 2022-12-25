@@ -35,23 +35,34 @@ pub struct NodeCategory {
 }
 
 impl ModelCommon<&str> for NodeCategory {
-    fn init_script(&self, connector: SqliteConnection) {
+    fn init_script(connector: SqliteConnection) -> Result<(), rusqlite::Error> {
         connector
-        .connect()
-        .expect("Could not create sqlite connection for NodeCategory init script")
-        .execute("CREATE TABLE IF NOT EXISTS NodeCategory(category_name TEXT NOT NULL UNIQUE PRIMARY KEY);",
-        ());
+            .connect()?
+            .execute(concat!(
+                "CREATE TABLE IF NOT EXISTS NodeCategory(category_name TEXT NOT NULL UNIQUE PRIMARY KEY);",
+                "INSERT OR IGNORE INTO NodeCategory (category_name) VALUES (event), (person), (document), (location), (appointment);"
+            ),
+        ())?;
+
+        Ok(())
     }
 
-    fn create(&self, connector: SqliteConnection) {
+    fn create(&self, connector: SqliteConnection) -> Result<(), rusqlite::Error> {
+        connector.connect()?.execute(
+            "INSERT INTO NodeCategory(category_name) VALUES (?1);",
+            (&self.name,),
+        )?;
+        Ok(())
+    }
+
+    fn read(t: &str, connector: SqliteConnection) -> Result<NodeCategory, rusqlite::Error> {
         todo!()
     }
 
-    fn read(t: &str, connector: SqliteConnection) -> Self {
-        todo!()
-    }
-
-    fn read_list(connector: SqliteConnection) -> Vec<Self> {
+    fn read_list(connector: SqliteConnection) -> Vec<Self>
+    where
+        Self: Sized,
+    {
         todo!()
     }
 
@@ -60,10 +71,6 @@ impl ModelCommon<&str> for NodeCategory {
     }
 
     fn delete(t: &str, connector: SqliteConnection) {
-        todo!()
-    }
-
-    fn get_init_order(&self) -> u8 {
         todo!()
     }
 }
