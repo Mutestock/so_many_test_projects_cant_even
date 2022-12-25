@@ -3,21 +3,12 @@
     windows_subsystem = "windows"
 )]
 
-#[macro_use]
-extern crate lazy_static;
 
-mod commands;
-mod connection;
-mod errors;
-mod model;
-mod state;
-mod ui;
-
-use commands::{node_commands::*, sqlite_commands::*};
-use connection::{
+use mindmap::commands::{node_commands::*, sqlite_commands::*};
+use mindmap::connection::{
     connection_common::MindmapConnector, initialize, sqlite_connection::SQLITE_CONNECTION,
 };
-use ui::menu::{create_menu, handle_menu_event};
+use mindmap::ui::menu::{create_menu, handle_menu_event};
 
 fn main() {
     tauri::Builder::default()

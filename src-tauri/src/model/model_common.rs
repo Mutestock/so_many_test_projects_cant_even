@@ -2,9 +2,10 @@ use chrono::{Local, DateTime, TimeZone, FixedOffset};
 use rusqlite::Row;
 
 use crate::connection::{sqlite_connection::SqliteConnection};
+use lazy_static;
 
 
-lazy_static!{
+lazy_static::lazy_static!{
     static ref DATE_TIME_OFFSET: FixedOffset = *Local::now().offset();
 }
 

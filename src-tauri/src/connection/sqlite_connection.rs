@@ -2,19 +2,23 @@ use std::path::PathBuf;
 
 use crate::connection::connection_common::MindmapConnector;
 use rusqlite::{Connection, Error};
+use lazy_static;
 
-lazy_static! {
+lazy_static::lazy_static! {
     pub static ref SQLITE_CONNECTION: SqliteConnection = SqliteConnection::default();
 }
 
 #[derive(Clone)]
 pub struct SqliteConnection {
-    database_file_path: Option<PathBuf>,
+    pub database_file_path: Option<PathBuf>,
 }
 
 impl MindmapConnector<Connection, Error> for SqliteConnection {
     fn connect(&self) -> Result<Connection, Error> {
-        Connection::open(&self.database_file_path.as_ref().unwrap())
+        match &self.database_file_path.as_ref(){
+            Some(db_file_path) => Connection::open(db_file_path),
+            None => Connection::open_in_memory(),
+        }
     }
 
     fn get_dir_path(&self) -> &PathBuf {
@@ -22,12 +26,6 @@ impl MindmapConnector<Connection, Error> for SqliteConnection {
     }
 }
 
-impl SqliteConnection {
-    fn new_in_memory(&self) -> Result<Connection, Error> {
-        // For testing purposes
-        Connection::open_in_memory()
-    }
-}
 
 impl Default for SqliteConnection {
     fn default() -> Self {
