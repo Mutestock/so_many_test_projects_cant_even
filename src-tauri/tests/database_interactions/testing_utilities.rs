@@ -1,7 +1,8 @@
-use lazy_static;
-use mindmap::connection::sqlite_connection::SqliteConnection;
+use mindmap::connection::{sqlite_connection::SqliteConnection, initialize};
 
 
-lazy_static::lazy_static! {
-    pub static ref TESTING_SQLITE_CONNECTION : SqliteConnection = SqliteConnection{database_file_path: None};
+pub fn get_testing_environment() -> SqliteConnection{
+    let sqlite_connection = SqliteConnection{database_file_path: None};
+    initialize(&sqlite_connection).expect("Could not initialize table creation in testing");
+    sqlite_connection
 }

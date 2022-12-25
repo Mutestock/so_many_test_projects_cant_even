@@ -50,7 +50,7 @@ impl ModelCommon<&str> for Node {
         Ok(())
     }
 
-    fn create(&self, connector: SqliteConnection) -> Result<(), rusqlite::Error> {
+    fn create(&self, connector: &SqliteConnection) -> Result<(), rusqlite::Error> {
         connector.connect()?.execute(
             concat!(
                 "INSERT INTO Node (name, date_added, date_modified, category_name)",
@@ -66,7 +66,7 @@ impl ModelCommon<&str> for Node {
         Ok(())
     }
 
-    fn read(t: &str, connector: SqliteConnection) -> Result<Node, rusqlite::Error> {
+    fn read(t: &str, connector: &SqliteConnection) -> Result<Node, rusqlite::Error> {
         let connection = connector.connect()?;
         let mut stmt = connection
             .prepare("SELECT date_added, date_modified, primary_image_path, category_name FROM Node WHERE name = ?1")?;
@@ -83,15 +83,15 @@ impl ModelCommon<&str> for Node {
         Ok(some_iter.next().unwrap()?)
     }
 
-    fn read_list(connector: SqliteConnection) -> Vec<Node> {
+    fn read_list(connector: &SqliteConnection) -> Vec<Node> {
         todo!()
     }
 
-    fn update(&self, t: &str, connector: SqliteConnection) {
+    fn update(&self, t: &str, connector: &SqliteConnection) {
         todo!()
     }
 
-    fn delete(t: &str, connector: SqliteConnection) {
+    fn delete(t: &str, connector: &SqliteConnection) {
         todo!()
     }
 }

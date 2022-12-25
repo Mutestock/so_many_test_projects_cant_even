@@ -43,7 +43,7 @@ impl ModelCommon<&str> for NodeComment {
         Ok(())
     }
 
-    fn create(&self, connector: SqliteConnection) -> Result<(), rusqlite::Error> {
+    fn create(&self, connector: &SqliteConnection) -> Result<(), rusqlite::Error> {
         connector.connect()?.execute(
             concat!(
                 "INSERT INTO NodeComment(uuid, content, date_added, date_modified, node_name)",
@@ -61,22 +61,22 @@ impl ModelCommon<&str> for NodeComment {
         Ok(())
     }
 
-    fn read(t: &str, connector: SqliteConnection) -> Result<NodeComment, rusqlite::Error> {
+    fn read(t: &str, connector: &SqliteConnection) -> Result<NodeComment, rusqlite::Error> {
         todo!()
     }
 
-    fn read_list(connector: SqliteConnection) -> Vec<Self>
+    fn read_list(connector: &SqliteConnection) -> Vec<Self>
     where
         Self: Sized,
     {
         todo!()
     }
 
-    fn update(&self, t: &str, connector: SqliteConnection) {
+    fn update(&self, t: &str, connector: &SqliteConnection) {
         todo!()
     }
 
-    fn delete(t: &str, connector: SqliteConnection) {
+    fn delete(t: &str, connector: &SqliteConnection) {
         todo!()
     }
 }

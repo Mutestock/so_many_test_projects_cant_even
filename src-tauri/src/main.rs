@@ -25,7 +25,7 @@ fn main() {
                 .create_dir_path()
                 .expect("Directory path creation for sqlite failed");
 
-            initialize(SQLITE_CONNECTION.to_owned()).expect("Initialization failed");
+            initialize(&SQLITE_CONNECTION).expect("Initialization failed");
             Ok(())
         })
         .run(tauri::generate_context!())

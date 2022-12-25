@@ -5,9 +5,9 @@ use crate::model::{node::Node, node_category::NodeCategory, node_comment::NodeCo
 
 use sqlite_connection::SqliteConnection;
 
-pub fn initialize(connection: SqliteConnection) -> Result<(), rusqlite::Error> {
-    NodeCategory::init_script(&connection)?;
-    Node::init_script(&connection)?;
-    NodeComment::init_script(&connection)?;
+pub fn initialize(connection: &SqliteConnection) -> Result<(), rusqlite::Error> {
+    NodeCategory::init_script(connection)?;
+    Node::init_script(connection)?;
+    NodeComment::init_script(connection)?;
     Ok(())
 }
