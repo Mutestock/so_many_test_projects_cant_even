@@ -40,7 +40,7 @@ impl ModelCommon<&str> for NodeCategory {
             .connect()?
             .execute(concat!(
                 "CREATE TABLE IF NOT EXISTS NodeCategory(category_name TEXT NOT NULL UNIQUE PRIMARY KEY);",
-                "INSERT OR IGNORE INTO NodeCategory (category_name) VALUES (event), (person), (document), (location), (appointment);"
+                "INSERT OR IGNORE INTO NodeCategory (category_name) VALUES ('event'), ('person'), ('document'), ('location'), ('appointment');"
             ),
         ())?;
 

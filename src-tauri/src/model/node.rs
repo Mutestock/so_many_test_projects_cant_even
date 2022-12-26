@@ -9,11 +9,11 @@ use super::model_common::DateTimeRusqlite;
 
 #[derive(Serialize, Deserialize)]
 pub struct Node {
-    name: String,
-    date_added: DateTime<Local>,
-    date_modified: DateTime<Local>,
-    primary_image_path: Option<String>,
-    node_category: String,
+    pub name: String,
+    pub date_added: DateTime<Local>,
+    pub date_modified: DateTime<Local>,
+    pub primary_image_path: Option<String>,
+    pub node_category: String,
 }
 
 impl Node {
@@ -37,17 +37,18 @@ impl Node {
 
 impl ModelCommon<&str> for Node {
     fn init_script(connector: &SqliteConnection) -> Result<(), rusqlite::Error> {
+        let query = "
+        CREATE TABLE IF NOT EXISTS Node(
+            name TEXT UNIQUE PRIMARY KEY NOT NULL,
+            date_added TEXT NOT NULL,
+            date_modified TEXT NOT NULL,
+            primary_image_path TEXT UNIQUE,
+            category_name TEXT NOT NULL,
+            FOREIGN KEY(category_name) REFERENCES NodeCategory(category_name)
+        )";
+
         connector.connect()?.execute(
-            concat!(
-                "CREATE TABLE IF NOT EXISTS Node(",
-                "   name TEXT UNIQUE PRIMARY KEY NOT NULL,",
-                "   date_added TEXT NOT NULL,",
-                "   date_modified TEXT NOT NULL,",
-                "   primary_image_path TEXT UNIQUE,",
-                "   category_name TEXT NOT NULL,",
-                "   FOREIGN KEY(category_name) REFERENCES NodeCategory(category_name)",
-                ");",
-            ),
+            query,
             (),
         )?;
         Ok(())
