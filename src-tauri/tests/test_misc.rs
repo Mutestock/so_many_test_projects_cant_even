@@ -8,3 +8,4 @@ fn test_parse_dates() {
     let naive_manual = Local::now().naive_local();
     assert_eq!(naive_method.num_days_from_ce(), naive_manual.num_days_from_ce());
 }
+

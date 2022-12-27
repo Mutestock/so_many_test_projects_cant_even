@@ -1,4 +1,4 @@
-
+use rusqlite::Row;
 
 pub trait ModelCommon<T> {
     // T - Primary read param, e.g. id could be i32
@@ -7,9 +7,12 @@ pub trait ModelCommon<T> {
     fn read(t: T, connection: &rusqlite::Connection) -> Result<Self, rusqlite::Error>
     where
         Self: Sized;
-    fn read_list(connection: &rusqlite::Connection) -> Vec<Self>
+    fn read_list(connection: &rusqlite::Connection) -> Result<Vec<Self>, rusqlite::Error>
     where
         Self: Sized;
-    fn update(&self, t: T, connection: &rusqlite::Connection);
-    fn delete(t: T, connection: &rusqlite::Connection);
+    fn update(&self, t: T, connection: &rusqlite::Connection) -> Result<(), rusqlite::Error>;
+    fn delete(t: T, connection: &rusqlite::Connection) -> Result<(), rusqlite::Error>;
+    fn from_row(p_key: Option<&str>, row: &Row) -> Result<Self, rusqlite::Error>
+    where
+        Self: Sized;
 }

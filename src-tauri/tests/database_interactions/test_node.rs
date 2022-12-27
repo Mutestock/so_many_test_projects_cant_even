@@ -11,9 +11,6 @@ lazy_static::lazy_static! {
     pub static ref TESTING_SQLITE_CONNECTOR: SqliteConnector = get_testing_environment();
 }
 
-#[derive(Debug)]
-struct Message(String);
-
 #[test]
 fn test_create_node() -> Result<(), Error> {
     let conn = TESTING_SQLITE_CONNECTOR.to_owned().connect().unwrap();
@@ -38,18 +35,64 @@ fn test_read_node() {
 }
 
 #[test]
-fn test_initialize() {
+fn test_read_list_node() {
     let conn = TESTING_SQLITE_CONNECTOR.to_owned().connect().unwrap();
     initialize(&conn).expect("Could not initialize table creation in testing");
-    let mut stmt = conn
-        .prepare("SELECT name FROM sqlite_schema WHERE type ='table' AND name NOT LIKE 'sqlite_%';")
+
+    Node::new("One".to_owned(), "event".to_owned())
+        .create(&conn)
+        .unwrap();
+    Node::new("Two".to_owned(), "event".to_owned())
+        .create(&conn)
+        .unwrap();
+    Node::new("Three".to_owned(), "event".to_owned())
+        .create(&conn)
         .unwrap();
 
-    let some_iter = stmt
-        .query_map([], |row| Ok(Message(row.get(0).unwrap())))
+    let nodes = Node::read_list(&conn).unwrap();
+
+    assert_eq!(nodes.len(), 3);
+}
+
+#[test]
+fn test_update_node() {
+    let conn = TESTING_SQLITE_CONNECTOR.to_owned().connect().unwrap();
+    initialize(&conn).expect("Could not initialize table creation in testing");
+
+    Node::new("Cake".to_owned(), "event".to_owned())
+        .create(&conn)
         .unwrap();
 
-    let stuff: Vec<Message> = some_iter.map(|x| x.unwrap()).collect();
+    let node = Node::read("Cake", &conn).unwrap();
+    assert_eq!(node.node_category(), "event");
 
-    assert_eq!(stuff.len(), 3);
+    Node::new("Cake".to_owned(), "appointment".to_owned())
+        .update("Cake", &conn)
+        .unwrap();
+
+    let node = Node::read("Cake", &conn).unwrap();
+    assert_eq!(node.node_category(), "appointment");
+}
+
+#[test]
+fn test_delete_node() {
+    let conn = TESTING_SQLITE_CONNECTOR.to_owned().connect().unwrap();
+    initialize(&conn).expect("Could not initialize table creation in testing");
+
+    Node::new("One".to_owned(), "event".to_owned())
+        .create(&conn)
+        .unwrap();
+    Node::new("Two".to_owned(), "event".to_owned())
+        .create(&conn)
+        .unwrap();
+    Node::new("Three".to_owned(), "event".to_owned())
+        .create(&conn)
+        .unwrap();
+
+    let nodes = Node::read_list(&conn).unwrap();
+    assert_eq!(nodes.len(), 3);
+
+    Node::delete("One", &conn).unwrap();
+    let nodes = Node::read_list(&conn).unwrap();
+    assert_eq!(nodes.len(), 2);
 }

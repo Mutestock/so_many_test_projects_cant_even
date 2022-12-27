@@ -69,18 +69,24 @@ impl ModelCommon<&str> for NodeComment {
         todo!()
     }
 
-    fn read_list(connection: &rusqlite::Connection) -> Vec<Self>
+    fn read_list(connection: &rusqlite::Connection) -> Result<Vec<NodeComment>, rusqlite::Error>
     where
         Self: Sized,
     {
         todo!()
     }
 
-    fn update(&self, t: &str, connection: &rusqlite::Connection) {
+    fn update(&self, t: &str, connection: &rusqlite::Connection) -> Result<(), rusqlite::Error> {
         todo!()
     }
 
-    fn delete(t: &str, connection: &rusqlite::Connection) {
+    fn delete(t: &str, connection: &rusqlite::Connection) -> Result<(), rusqlite::Error> {
+        todo!()
+    }
+
+    fn from_row(p_key: Option<&str>, row: &rusqlite::Row) -> Result<Self, rusqlite::Error>
+    where
+        Self: Sized {
         todo!()
     }
 }

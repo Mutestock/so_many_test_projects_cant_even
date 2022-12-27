@@ -1,18 +1,16 @@
-use chrono::{NaiveDateTime};
+use chrono::NaiveDateTime;
+use rusqlite::{params, types::Null, ToSql};
 use serde::{Deserialize, Serialize};
 
-use crate::{
-    misc::time_management::{NaiveDateTimeRusqlite},
-    model::model_common::ModelCommon,
-};
+use crate::{misc::time_management::NaiveDateTimeRusqlite, model::model_common::ModelCommon};
 
 #[derive(Serialize, Deserialize)]
 pub struct Node {
-    pub name: String,
-    pub date_added: NaiveDateTime,
-    pub date_modified: NaiveDateTime,
-    pub primary_image_path: Option<String>,
-    pub node_category: String,
+    name: String,
+    date_added: NaiveDateTime,
+    date_modified: NaiveDateTime,
+    primary_image_path: Option<String>,
+    node_category: String,
 }
 
 impl Node {
@@ -70,27 +68,65 @@ impl ModelCommon<&str> for Node {
         let mut stmt = connection
             .prepare("SELECT date_added, date_modified, primary_image_path, category_name FROM Node WHERE name = ?1")?;
 
-        let mut some_iter = stmt.query_map([t], |row| {
-            Ok(Node {
-                name: t.to_owned(),
-                date_added: NaiveDateTime::from_row(row, 0),
-                date_modified: NaiveDateTime::from_row(row, 1),
-                primary_image_path: row.get(2)?,
-                node_category: row.get(3)?,
-            })
-        })?;
+        let mut some_iter = stmt.query_map([t], |row| Node::from_row(Some(t), row))?;
         Ok(some_iter.next().unwrap()?)
     }
 
-    fn read_list(connection: &rusqlite::Connection) -> Vec<Node> {
-        todo!()
+    fn read_list(connection: &rusqlite::Connection) -> Result<Vec<Node>, rusqlite::Error> {
+        connection
+            .prepare(
+                "SELECT name, date_added, date_modified, primary_image_path, category_name FROM Node",
+            )?
+            .query_map([], |row| Node::from_row(None, row))?
+            .collect()
     }
 
-    fn update(&self, t: &str, connection: &rusqlite::Connection) {
-        todo!()
+    fn update(&self, t: &str, connection: &rusqlite::Connection) -> Result<(), rusqlite::Error> {
+        connection
+            .prepare(
+                "UPDATE Node
+                SET date_added = ?1,
+                    date_modified = ?2,
+                    primary_image_path = ?3,
+                    category_name = ?4
+
+                WHERE name = ?5;
+            ",
+            )?
+            .execute((
+                self.date_added.to_format(),
+                NaiveDateTime::now().to_format(),
+                &self.primary_image_path,
+                &self.node_category,
+                t,
+            ))?;
+        Ok(())
     }
 
-    fn delete(t: &str, connection: &rusqlite::Connection) {
-        todo!()
+    fn delete(t: &str, connection: &rusqlite::Connection) -> Result<(), rusqlite::Error> {
+        connection
+            .prepare("DELETE FROM node WHERE name = ?1")?
+            .execute((t,))?;
+        Ok(())
+    }
+
+    fn from_row(p_key: Option<&str>, row: &rusqlite::Row) -> Result<Node, rusqlite::Error> {
+        let p_img_path: Option<String> = row.get(2)?;
+        match p_key {
+            Some(p_key_val) => Ok(Node {
+                name: p_key_val.to_owned(),
+                date_added: NaiveDateTime::from_row(row, 0),
+                date_modified: NaiveDateTime::from_row(row, 1),
+                primary_image_path: p_img_path,
+                node_category: row.get(3)?,
+            }),
+            None => Ok(Node {
+                name: row.get(0)?,
+                date_added: NaiveDateTime::from_row(row, 1),
+                date_modified: NaiveDateTime::from_row(row, 2),
+                primary_image_path: p_img_path,
+                node_category: row.get(4)?,
+            }),
+        }
     }
 }
