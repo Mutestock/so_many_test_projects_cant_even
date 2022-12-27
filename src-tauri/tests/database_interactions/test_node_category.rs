@@ -54,4 +54,3 @@ fn test_read_list_node_category() -> Result<(), rusqlite::Error> {
     assert_eq!(NodeCategory::read_list(&conn)?.len(), 6);
     Ok(())
 }
-

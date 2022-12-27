@@ -37,11 +37,13 @@ impl Node {
         connection: &rusqlite::Connection,
     ) -> Result<(), rusqlite::Error> {
         connection
-            .prepare("
+            .prepare(
+                "
                 UPDATE Node
                 SET node_category = ?1
                 WHERE name = ?2
-            ")?
+            ",
+            )?
             .execute(params![new_category, &self.name])?;
 
         Ok(())

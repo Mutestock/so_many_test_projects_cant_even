@@ -2,7 +2,6 @@ use mindmap::connection::{
     connection_common::MindmapConnector, initialize, sqlite_connection::SqliteConnector,
 };
 
-
 lazy_static::lazy_static! {
     pub static ref TESTING_SQLITE_CONNECTOR: SqliteConnector = get_testing_environment();
 }

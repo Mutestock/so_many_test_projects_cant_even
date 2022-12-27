@@ -4,7 +4,7 @@
 pub mod commands;
 pub mod connection;
 pub mod errors;
+pub mod misc;
 pub mod model;
 pub mod state;
 pub mod ui;
-pub mod misc;

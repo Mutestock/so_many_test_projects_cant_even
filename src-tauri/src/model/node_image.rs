@@ -1,6 +1,8 @@
 use chrono::NaiveDateTime;
 
-use crate::{connection::sqlite_connection::SqliteConnector, misc::time_management::NaiveDateTimeExtension};
+use crate::{
+    misc::time_management::NaiveDateTimeExtension,
+};
 
 use super::model_common::ModelCommon;
 
@@ -10,7 +12,6 @@ pub struct NodeImage {
     node_name: String,
     date_added: NaiveDateTime,
     date_modified: NaiveDateTime,
-
 }
 
 impl NodeImage {

@@ -3,7 +3,6 @@
     windows_subsystem = "windows"
 )]
 
-
 use mindmap::commands::{node_commands::*, sqlite_commands::*};
 use mindmap::connection::{
     connection_common::MindmapConnector, initialize, sqlite_connection::SQLITE_CONNECTOR,

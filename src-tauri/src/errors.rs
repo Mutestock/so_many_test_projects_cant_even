@@ -1,7 +1,5 @@
 use std::{error::Error, fmt::Display};
 
-
-
 #[derive(Debug)]
 pub struct TryFromError(pub String);
 impl Error for TryFromError {}
@@ -10,4 +8,3 @@ impl Display for TryFromError {
         write!(f, "Attempt to use TryFrom and failed: Msg: {}", self.0)
     }
 }
-

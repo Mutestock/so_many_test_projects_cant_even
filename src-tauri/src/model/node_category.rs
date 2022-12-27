@@ -3,8 +3,6 @@ use std::fmt::Display;
 use rusqlite::params;
 use serde::{Deserialize, Serialize};
 
-use crate::connection::{connection_common::MindmapConnector, sqlite_connection::SqliteConnector};
-
 use super::{model_common::ModelCommon, node::Node};
 
 #[derive(Serialize, Deserialize, PartialEq)]

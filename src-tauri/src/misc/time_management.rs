@@ -1,4 +1,4 @@
-use chrono::{DateTime, Local, NaiveDateTime};
+use chrono::{Local, NaiveDateTime};
 use rusqlite::Row;
 
 lazy_static::lazy_static! {
@@ -22,7 +22,6 @@ impl NaiveDateTimeExtension for NaiveDateTime {
     fn to_format(&self) -> String {
         self.format(&DATE_TIME_FORMAT).to_string()
     }
-
     fn now() -> NaiveDateTime {
         NaiveDateTime::parse_from_str(
             &Local::now().format(&DATE_TIME_FORMAT).to_string(),
