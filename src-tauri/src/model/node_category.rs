@@ -1,10 +1,11 @@
 use std::fmt::Display;
 
+use rusqlite::params;
 use serde::{Deserialize, Serialize};
 
 use crate::connection::{connection_common::MindmapConnector, sqlite_connection::SqliteConnector};
 
-use super::model_common::ModelCommon;
+use super::{model_common::ModelCommon, node::Node};
 
 #[derive(Serialize, Deserialize, PartialEq)]
 pub enum NodePreset {
@@ -34,6 +35,15 @@ pub struct NodeCategory {
     name: String,
 }
 
+impl NodeCategory {
+    pub fn new(name: String) -> Self {
+        Self { name }
+    }
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+}
+
 impl ModelCommon<&str> for NodeCategory {
     fn init_script(connection: &rusqlite::Connection) -> Result<(), rusqlite::Error> {
         connection.execute(
@@ -44,7 +54,7 @@ impl ModelCommon<&str> for NodeCategory {
         )?;
         connection.execute(
             "INSERT OR IGNORE INTO NodeCategory (category_name) 
-                VALUES ('event'), ('person'), ('document'), ('location'), ('appointment');",
+                VALUES ('event'), ('person'), ('document'), ('location'), ('appointment'), ('none');",
             (),
         )?;
         Ok(())
@@ -59,28 +69,59 @@ impl ModelCommon<&str> for NodeCategory {
     }
 
     fn read(t: &str, connection: &rusqlite::Connection) -> Result<NodeCategory, rusqlite::Error> {
-        todo!()
+        // This is utterly pointless right now
+        connection
+            .prepare("SELECT category_name FROM NodeCategory WHERE category_name = ?1")?
+            .query_map([t], |row| NodeCategory::from_row(Some(t), row))?
+            .next()
+            .unwrap()
     }
 
     fn read_list(connection: &rusqlite::Connection) -> Result<Vec<NodeCategory>, rusqlite::Error>
     where
         Self: Sized,
     {
-        todo!()
+        connection
+            .prepare("SELECT category_name FROM NodeCategory")?
+            .query_map([], |row| NodeCategory::from_row(None, row))?
+            .collect()
     }
 
     fn update(&self, t: &str, connection: &rusqlite::Connection) -> Result<(), rusqlite::Error> {
-        todo!()
+        Node::read_list(connection)?
+            .iter()
+            .for_each(|node| node.update_node_category(t, connection).unwrap());
+        connection
+            .prepare("UPDATE NodeCategory SET category_name = ?1 WHERE category_name = ?2")?
+            .execute(params![self.name, t])?;
+
+        Ok(())
     }
 
     fn delete(t: &str, connection: &rusqlite::Connection) -> Result<(), rusqlite::Error> {
-        todo!()
+        Node::read_list(connection)?
+            .iter()
+            .for_each(|node| node.update_node_category("none", connection).unwrap());
+        connection
+            .prepare(
+                "
+            DELETE FROM NodeCategory WHERE category_name = ?1;
+            ",
+            )?
+            .execute(params![t])?;
+
+        Ok(())
     }
 
     fn from_row(p_key: Option<&str>, row: &rusqlite::Row) -> Result<Self, rusqlite::Error>
     where
         Self: Sized,
     {
-        todo!()
+        match p_key {
+            Some(val) => Ok(NodeCategory {
+                name: val.to_owned(),
+            }),
+            None => Ok(NodeCategory { name: row.get(0)? }),
+        }
     }
 }

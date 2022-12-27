@@ -1,5 +1,5 @@
 use chrono::{Local, Datelike,  NaiveDateTime};
-use mindmap::misc::time_management::{ NaiveDateTimeRusqlite};
+use mindmap::misc::time_management::{ NaiveDateTimeExtension};
 
 
 #[test]

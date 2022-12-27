@@ -1,4 +1,6 @@
-use crate::connection::sqlite_connection::SqliteConnector;
+use chrono::NaiveDateTime;
+
+use crate::{connection::sqlite_connection::SqliteConnector, misc::time_management::NaiveDateTimeExtension};
 
 use super::model_common::ModelCommon;
 
@@ -6,6 +8,9 @@ pub struct NodeImage {
     image_title: String,
     image_path: Option<String>,
     node_name: String,
+    date_added: NaiveDateTime,
+    date_modified: NaiveDateTime,
+
 }
 
 impl NodeImage {
@@ -14,7 +19,15 @@ impl NodeImage {
             image_title,
             image_path: None,
             node_name,
+            date_added: NaiveDateTime::now(),
+            date_modified: NaiveDateTime::now(),
         }
+    }
+    pub fn node_name(&self) -> &str {
+        &self.node_name
+    }
+    pub fn image_title(&self) -> &str {
+        &self.image_title
     }
 }
 
@@ -51,7 +64,8 @@ impl ModelCommon<&str> for NodeImage {
 
     fn from_row(p_key: Option<&str>, row: &rusqlite::Row) -> Result<Self, rusqlite::Error>
     where
-        Self: Sized {
+        Self: Sized,
+    {
         todo!()
     }
 }

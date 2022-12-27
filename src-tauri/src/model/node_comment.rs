@@ -1,7 +1,7 @@
-use crate::misc::time_management::{NaiveDateTimeRusqlite};
+use crate::misc::time_management::NaiveDateTimeExtension;
 
 use super::model_common::ModelCommon;
-use chrono::{NaiveDateTime};
+use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -24,8 +24,11 @@ impl NodeComment {
             date_modified: NaiveDateTime::now(),
         }
     }
-    pub fn uuid(&self) -> &str{
+    pub fn uuid(&self) -> &str {
         &self.uuid
+    }
+    pub fn content(&self) -> &str {
+        &self.content
     }
 }
 
@@ -86,7 +89,8 @@ impl ModelCommon<&str> for NodeComment {
 
     fn from_row(p_key: Option<&str>, row: &rusqlite::Row) -> Result<Self, rusqlite::Error>
     where
-        Self: Sized {
+        Self: Sized,
+    {
         todo!()
     }
 }

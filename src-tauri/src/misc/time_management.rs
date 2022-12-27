@@ -5,13 +5,13 @@ lazy_static::lazy_static! {
     pub static ref DATE_TIME_FORMAT: String =  "%d-%m-%Y %H:%M:%S".to_owned();
 }
 
-pub trait NaiveDateTimeRusqlite {
+pub trait NaiveDateTimeExtension {
     fn from_row(row: &Row, row_index: usize) -> NaiveDateTime;
     fn to_format(&self) -> String;
     fn now() -> NaiveDateTime;
 }
 
-impl NaiveDateTimeRusqlite for NaiveDateTime {
+impl NaiveDateTimeExtension for NaiveDateTime {
     fn from_row(row: &Row, row_index: usize) -> NaiveDateTime {
         let res: String = row.get(row_index).unwrap();
         let res = res.as_str();

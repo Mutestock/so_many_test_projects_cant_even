@@ -1,8 +1,8 @@
 use chrono::NaiveDateTime;
-use rusqlite::{params, types::Null, ToSql};
+use rusqlite::params;
 use serde::{Deserialize, Serialize};
 
-use crate::{misc::time_management::NaiveDateTimeRusqlite, model::model_common::ModelCommon};
+use crate::{misc::time_management::NaiveDateTimeExtension, model::model_common::ModelCommon};
 
 #[derive(Serialize, Deserialize)]
 pub struct Node {
@@ -29,6 +29,22 @@ impl Node {
     }
     pub fn node_category(&self) -> &str {
         &self.node_category
+    }
+
+    pub fn update_node_category(
+        &self,
+        new_category: &str,
+        connection: &rusqlite::Connection,
+    ) -> Result<(), rusqlite::Error> {
+        connection
+            .prepare("
+                UPDATE Node
+                SET node_category = ?1
+                WHERE name = ?2
+            ")?
+            .execute(params![new_category, &self.name])?;
+
+        Ok(())
     }
 }
 
@@ -84,7 +100,8 @@ impl ModelCommon<&str> for Node {
     fn update(&self, t: &str, connection: &rusqlite::Connection) -> Result<(), rusqlite::Error> {
         connection
             .prepare(
-                "UPDATE Node
+                "
+                UPDATE Node
                 SET date_added = ?1,
                     date_modified = ?2,
                     primary_image_path = ?3,

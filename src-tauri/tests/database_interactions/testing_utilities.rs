@@ -2,7 +2,10 @@ use mindmap::connection::{
     connection_common::MindmapConnector, initialize, sqlite_connection::SqliteConnector,
 };
 
-use crate::database_interactions::test_node::TESTING_SQLITE_CONNECTOR;
+
+lazy_static::lazy_static! {
+    pub static ref TESTING_SQLITE_CONNECTOR: SqliteConnector = get_testing_environment();
+}
 
 pub fn get_testing_environment() -> SqliteConnector {
     let sqlite_connection = SqliteConnector {

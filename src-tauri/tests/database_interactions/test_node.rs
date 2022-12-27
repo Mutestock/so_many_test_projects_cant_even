@@ -1,98 +1,75 @@
 use mindmap::connection::{connection_common::MindmapConnector, initialize};
-pub use mindmap::{
-    connection::sqlite_connection::SqliteConnector,
-    model::{model_common::ModelCommon, node::Node},
-};
+use mindmap::model::{model_common::ModelCommon, node::Node};
 use rusqlite::Error;
 
-use crate::database_interactions::testing_utilities::get_testing_environment;
-
-lazy_static::lazy_static! {
-    pub static ref TESTING_SQLITE_CONNECTOR: SqliteConnector = get_testing_environment();
-}
+use super::testing_utilities::TESTING_SQLITE_CONNECTOR;
 
 #[test]
 fn test_create_node() -> Result<(), Error> {
-    let conn = TESTING_SQLITE_CONNECTOR.to_owned().connect().unwrap();
-    initialize(&conn).expect("Could not initialize table creation in testing");
-    Node::new("Cake".to_owned(), "event".to_owned())
-        .create(&conn)
-        .unwrap();
+    let conn = TESTING_SQLITE_CONNECTOR.to_owned().connect()?;
+    initialize(&conn)?;
+    Node::new("Cake".to_owned(), "event".to_owned()).create(&conn)?;
     Ok(())
 }
 
 #[test]
-fn test_read_node() {
-    let conn = TESTING_SQLITE_CONNECTOR.to_owned().connect().unwrap();
-    initialize(&conn).expect("Could not initialize table creation in testing");
-    Node::new("Cake".to_owned(), "event".to_owned())
-        .create(&conn)
-        .unwrap();
+fn test_read_node() -> Result<(), Error> {
+    let conn = TESTING_SQLITE_CONNECTOR.to_owned().connect()?;
+    initialize(&conn)?;
+    Node::new("Cake".to_owned(), "event".to_owned()).create(&conn)?;
 
-    let node = Node::read("Cake", &conn).unwrap();
+    let node = Node::read("Cake", &conn)?;
 
     assert_eq!(node.node_category(), "event");
+    Ok(())
 }
 
 #[test]
-fn test_read_list_node() {
-    let conn = TESTING_SQLITE_CONNECTOR.to_owned().connect().unwrap();
-    initialize(&conn).expect("Could not initialize table creation in testing");
+fn test_read_list_node() -> Result<(), Error> {
+    let conn = TESTING_SQLITE_CONNECTOR.to_owned().connect()?;
+    initialize(&conn)?;
 
-    Node::new("One".to_owned(), "event".to_owned())
-        .create(&conn)
-        .unwrap();
-    Node::new("Two".to_owned(), "event".to_owned())
-        .create(&conn)
-        .unwrap();
-    Node::new("Three".to_owned(), "event".to_owned())
-        .create(&conn)
-        .unwrap();
+    Node::new("One".to_owned(), "event".to_owned()).create(&conn)?;
+    Node::new("Two".to_owned(), "event".to_owned()).create(&conn)?;
+    Node::new("Three".to_owned(), "event".to_owned()).create(&conn)?;
 
-    let nodes = Node::read_list(&conn).unwrap();
+    let nodes = Node::read_list(&conn)?;
 
     assert_eq!(nodes.len(), 3);
+    Ok(())
 }
 
 #[test]
-fn test_update_node() {
-    let conn = TESTING_SQLITE_CONNECTOR.to_owned().connect().unwrap();
-    initialize(&conn).expect("Could not initialize table creation in testing");
+fn test_update_node() -> Result<(), Error> {
+    let conn = TESTING_SQLITE_CONNECTOR.to_owned().connect()?;
+    initialize(&conn)?;
 
-    Node::new("Cake".to_owned(), "event".to_owned())
-        .create(&conn)
-        .unwrap();
+    Node::new("Cake".to_owned(), "event".to_owned()).create(&conn)?;
 
-    let node = Node::read("Cake", &conn).unwrap();
+    let node = Node::read("Cake", &conn)?;
     assert_eq!(node.node_category(), "event");
 
-    Node::new("Cake".to_owned(), "appointment".to_owned())
-        .update("Cake", &conn)
-        .unwrap();
+    Node::new("Cake".to_owned(), "appointment".to_owned()).update("Cake", &conn)?;
 
-    let node = Node::read("Cake", &conn).unwrap();
+    let node = Node::read("Cake", &conn)?;
     assert_eq!(node.node_category(), "appointment");
+    Ok(())
 }
 
 #[test]
-fn test_delete_node() {
-    let conn = TESTING_SQLITE_CONNECTOR.to_owned().connect().unwrap();
-    initialize(&conn).expect("Could not initialize table creation in testing");
+fn test_delete_node() -> Result<(), Error> {
+    let conn = TESTING_SQLITE_CONNECTOR.to_owned().connect()?;
+    initialize(&conn)?;
 
-    Node::new("One".to_owned(), "event".to_owned())
-        .create(&conn)
-        .unwrap();
-    Node::new("Two".to_owned(), "event".to_owned())
-        .create(&conn)
-        .unwrap();
-    Node::new("Three".to_owned(), "event".to_owned())
-        .create(&conn)
-        .unwrap();
+    Node::new("One".to_owned(), "event".to_owned()).create(&conn)?;
+    Node::new("Two".to_owned(), "event".to_owned()).create(&conn)?;
+    Node::new("Three".to_owned(), "event".to_owned()).create(&conn)?;
 
-    let nodes = Node::read_list(&conn).unwrap();
+    let nodes = Node::read_list(&conn)?;
     assert_eq!(nodes.len(), 3);
 
-    Node::delete("One", &conn).unwrap();
-    let nodes = Node::read_list(&conn).unwrap();
+    Node::delete("One", &conn)?;
+    let nodes = Node::read_list(&conn)?;
     assert_eq!(nodes.len(), 2);
+    Ok(())
 }
