@@ -6,7 +6,7 @@
 
 use mindmap::commands::{node_commands::*, sqlite_commands::*};
 use mindmap::connection::{
-    connection_common::MindmapConnector, initialize, sqlite_connection::SQLITE_CONNECTION,
+    connection_common::MindmapConnector, initialize, sqlite_connection::SQLITE_CONNECTOR,
 };
 use mindmap::ui::menu::{create_menu, handle_menu_event};
 
@@ -21,11 +21,11 @@ fn main() {
             cmd_read_node,
         ])
         .setup(|_| {
-            SQLITE_CONNECTION
+            SQLITE_CONNECTOR
                 .create_dir_path()
                 .expect("Directory path creation for sqlite failed");
 
-            initialize(&SQLITE_CONNECTION).expect("Initialization failed");
+            initialize(&SQLITE_CONNECTOR.connect().unwrap()).expect("Initialization failed");
             Ok(())
         })
         .run(tauri::generate_context!())

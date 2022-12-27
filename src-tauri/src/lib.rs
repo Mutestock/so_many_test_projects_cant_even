@@ -7,3 +7,4 @@ pub mod errors;
 pub mod model;
 pub mod state;
 pub mod ui;
+pub mod misc;

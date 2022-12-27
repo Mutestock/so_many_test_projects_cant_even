@@ -1,17 +1,16 @@
-use chrono::{DateTime, Local};
+use chrono::{NaiveDateTime};
 use serde::{Deserialize, Serialize};
 
-use crate::connection::connection_common::MindmapConnector;
-use crate::connection::sqlite_connection::SqliteConnection;
-use crate::model::model_common::ModelCommon;
-
-use super::model_common::DateTimeRusqlite;
+use crate::{
+    misc::time_management::{NaiveDateTimeRusqlite},
+    model::model_common::ModelCommon,
+};
 
 #[derive(Serialize, Deserialize)]
 pub struct Node {
     pub name: String,
-    pub date_added: DateTime<Local>,
-    pub date_modified: DateTime<Local>,
+    pub date_added: NaiveDateTime,
+    pub date_modified: NaiveDateTime,
     pub primary_image_path: Option<String>,
     pub node_category: String,
 }
@@ -20,8 +19,8 @@ impl Node {
     pub fn new(name: String, node_category: String) -> Self {
         Self {
             name,
-            date_added: Local::now(),
-            date_modified: Local::now(),
+            date_added: NaiveDateTime::now(),
+            date_modified: NaiveDateTime::now(),
             primary_image_path: None,
             node_category,
         }
@@ -36,7 +35,7 @@ impl Node {
 }
 
 impl ModelCommon<&str> for Node {
-    fn init_script(connector: &SqliteConnection) -> Result<(), rusqlite::Error> {
+    fn init_script(connection: &rusqlite::Connection) -> Result<(), rusqlite::Error> {
         let query = "
         CREATE TABLE IF NOT EXISTS Node(
             name TEXT UNIQUE PRIMARY KEY NOT NULL,
@@ -47,55 +46,51 @@ impl ModelCommon<&str> for Node {
             FOREIGN KEY(category_name) REFERENCES NodeCategory(category_name)
         )";
 
-        connector.connect()?.execute(
-            query,
-            (),
-        )?;
+        connection.execute(query, ())?;
         Ok(())
     }
 
-    fn create(&self, connector: &SqliteConnection) -> Result<(), rusqlite::Error> {
-        connector.connect()?.execute(
+    fn create(&self, connection: &rusqlite::Connection) -> Result<(), rusqlite::Error> {
+        connection.execute(
             concat!(
                 "INSERT INTO Node (name, date_added, date_modified, category_name)",
                 "VALUES (?1, ?2, ?3, ?4);"
             ),
             (
                 &self.name,
-                self.date_added.to_string(),
-                self.date_modified.to_string(),
+                self.date_added.to_format(),
+                self.date_modified.to_format(),
                 &self.node_category,
             ),
         )?;
         Ok(())
     }
 
-    fn read(t: &str, connector: &SqliteConnection) -> Result<Node, rusqlite::Error> {
-        let connection = connector.connect()?;
+    fn read(t: &str, connection: &rusqlite::Connection) -> Result<Node, rusqlite::Error> {
         let mut stmt = connection
             .prepare("SELECT date_added, date_modified, primary_image_path, category_name FROM Node WHERE name = ?1")?;
 
         let mut some_iter = stmt.query_map([t], |row| {
             Ok(Node {
                 name: t.to_owned(),
-                date_added: DateTime::<Local>::from_row(row, 0),
-                date_modified: DateTime::<Local>::from_row(row, 1),
-                primary_image_path: Some(row.get(2)?),
+                date_added: NaiveDateTime::from_row(row, 0),
+                date_modified: NaiveDateTime::from_row(row, 1),
+                primary_image_path: row.get(2)?,
                 node_category: row.get(3)?,
             })
         })?;
         Ok(some_iter.next().unwrap()?)
     }
 
-    fn read_list(connector: &SqliteConnection) -> Vec<Node> {
+    fn read_list(connection: &rusqlite::Connection) -> Vec<Node> {
         todo!()
     }
 
-    fn update(&self, t: &str, connector: &SqliteConnection) {
+    fn update(&self, t: &str, connection: &rusqlite::Connection) {
         todo!()
     }
 
-    fn delete(t: &str, connector: &SqliteConnection) {
+    fn delete(t: &str, connection: &rusqlite::Connection) {
         todo!()
     }
 }

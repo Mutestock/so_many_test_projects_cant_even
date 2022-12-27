@@ -1,34 +1,15 @@
-use chrono::{Local, DateTime, TimeZone, FixedOffset};
-use rusqlite::Row;
-
-use crate::connection::{sqlite_connection::SqliteConnection};
-use lazy_static;
-
-
-lazy_static::lazy_static!{
-    static ref DATE_TIME_OFFSET: FixedOffset = *Local::now().offset();
-}
 
 
 pub trait ModelCommon<T> {
     // T - Primary read param, e.g. id could be i32
-    fn init_script( connector: &SqliteConnection ) -> Result<(), rusqlite::Error>;
-    fn create(&self, connector: &SqliteConnection) -> Result<(), rusqlite::Error>;
-    fn read(t: T, connector: &SqliteConnection) -> Result<Self, rusqlite::Error> where Self: Sized;
-    fn read_list(connector: &SqliteConnection) -> Vec<Self> where Self: Sized;
-    fn update(&self, t: T, connector: &SqliteConnection);
-    fn delete(t: T, connector: &SqliteConnection);
-}
-
-
-pub trait DateTimeRusqlite<T: TimeZone>{
-    fn from_row(row: &Row, row_index: usize) -> DateTime<T>;
-}
-
-impl DateTimeRusqlite<Local> for DateTime<Local>{
-    fn from_row(row: &Row, row_index: usize) -> DateTime<Local> { 
-        let res: String = row.get(row_index).unwrap();
-        let res = res.as_str();
-        Local.datetime_from_str(res, &DATE_TIME_OFFSET.to_string()).unwrap().to_owned()
-    }
+    fn init_script(connection: &rusqlite::Connection) -> Result<(), rusqlite::Error>;
+    fn create(&self, connection: &rusqlite::Connection) -> Result<(), rusqlite::Error>;
+    fn read(t: T, connection: &rusqlite::Connection) -> Result<Self, rusqlite::Error>
+    where
+        Self: Sized;
+    fn read_list(connection: &rusqlite::Connection) -> Vec<Self>
+    where
+        Self: Sized;
+    fn update(&self, t: T, connection: &rusqlite::Connection);
+    fn delete(t: T, connection: &rusqlite::Connection);
 }
