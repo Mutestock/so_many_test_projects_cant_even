@@ -54,7 +54,7 @@ impl ModelCommon<&str> for NodeComment {
         connection.execute(
             concat!(
                 "INSERT INTO NodeComment(uuid, content, date_added, date_modified, node_name)",
-                "VALUES( ?1, ?2, ?3, ?4, ?5"
+                "VALUES( ?1, ?2, ?3, ?4, ?5)"
             ),
             (
                 &self.uuid,
@@ -69,6 +69,9 @@ impl ModelCommon<&str> for NodeComment {
     }
 
     fn read(t: &str, connection: &rusqlite::Connection) -> Result<NodeComment, rusqlite::Error> {
+        connection
+            .prepare("SELECT uuid, content, date_added, date_modified, node_name");
+
         todo!()
     }
 
