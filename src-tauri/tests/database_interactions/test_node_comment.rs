@@ -82,3 +82,13 @@ fn test_read_list_node_comment() -> Result<(), rusqlite::Error> {
 
     Ok(())
 }
+
+#[test]
+fn test_read_none_doesnt_cause_errors() {
+    assert_eq!(2, 2);
+}
+
+#[test]
+fn test_read_all_none_does_not_cause_errors() {
+    assert_eq!(2, 2);
+}

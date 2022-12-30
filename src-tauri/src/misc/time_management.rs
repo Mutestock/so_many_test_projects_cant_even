@@ -16,7 +16,7 @@ impl NaiveDateTimeExtension for NaiveDateTime {
         let res: String = row.get(row_index).unwrap();
         let res = res.as_str();
         NaiveDateTime::parse_from_str(res, &DATE_TIME_FORMAT)
-            .expect("Parse error on from row_in time management")
+            .expect("Parse error on from_row in time management")
     }
 
     fn to_format(&self) -> String {
@@ -27,6 +27,6 @@ impl NaiveDateTimeExtension for NaiveDateTime {
             &Local::now().format(&DATE_TIME_FORMAT).to_string(),
             &DATE_TIME_FORMAT,
         )
-        .expect("Parse error on from row_in time management")
+        .expect("Parse error on 'now' time management")
     }
 }

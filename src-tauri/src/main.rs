@@ -7,6 +7,7 @@ use mindmap::commands::{node_commands::*, sqlite_commands::*};
 use mindmap::connection::{
     connection_common::MindmapConnector, initialize, sqlite_connection::SQLITE_CONNECTOR,
 };
+use mindmap::misc::directories::create_directories;
 use mindmap::ui::menu::{create_menu, handle_menu_event};
 
 fn main() {
@@ -23,6 +24,8 @@ fn main() {
             SQLITE_CONNECTOR
                 .create_dir_path()
                 .expect("Directory path creation for sqlite failed");
+
+            create_directories(false).expect("Could not create directories");
 
             initialize(&SQLITE_CONNECTOR.connect().unwrap()).expect("Initialization failed");
             Ok(())

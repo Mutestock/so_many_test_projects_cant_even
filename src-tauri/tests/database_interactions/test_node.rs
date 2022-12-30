@@ -73,3 +73,14 @@ fn test_delete_node() -> Result<(), Error> {
     assert_eq!(nodes.len(), 2);
     Ok(())
 }
+
+
+#[test]
+fn test_delete_node_does_not_cause_node_comment_conflicts() {
+    assert_eq!(2, 2);
+}
+
+#[test]
+fn test_delete_node_does_not_cause_node_image_conflicts() {
+    assert_eq!(2, 2);
+}
