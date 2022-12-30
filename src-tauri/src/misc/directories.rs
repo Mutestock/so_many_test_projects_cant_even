@@ -1,41 +1,49 @@
+use std::env;
 use std::{
-    fs::{read_dir, remove_file, DirBuilder, remove_dir},
+    fs::{read_dir, remove_dir, remove_file, DirBuilder},
     io,
     path::PathBuf,
 };
-use tauri::api::path::BaseDirectory;
+use tauri::api::path::{resolve_path, BaseDirectory};
+use tauri::Env;
 
-pub fn create_directories(temp_dirs: bool) -> Result<(), io::Error> {
-    match temp_dirs {
-        false => DirBuilder::new().recursive(true).create(
-            [BaseDirectory::AppData.to_owned().variable(), "images"]
-                .iter()
-                .collect::<PathBuf>(),
-        ),
-        true => DirBuilder::new().recursive(true).create(
-            [BaseDirectory::AppData.to_owned().variable(), "image_temp"]
-                .iter()
-                .collect::<PathBuf>(),
-        ),
-    }
-}
+lazy_static::lazy_static! {
 
-pub fn clean_temp_dirs() -> Result<(), io::Error> {
-    let temp_img_path = [BaseDirectory::AppData.to_owned().variable(), "image_temp"]
+    static ref TEMP_IMAGE_DIRECTORY: PathBuf = ["tests","temp_images"]
         .iter()
         .collect::<PathBuf>();
 
-    let temp_files = read_dir(&temp_img_path)?
+    pub static ref BASE_IMAGE_PATH: PathBuf = {
+        match env::var("MINDMAP_TEST_MOD"){
+            Ok(_) => TEMP_IMAGE_DIRECTORY.to_owned(),
+            Err(_) => {
+                let context = tauri::generate_context!();
+                resolve_path(
+                    context.config(),
+                    context.package_info(),
+                    &Env::default(),
+                    "images",
+                    Some(BaseDirectory::AppData),
+                )
+                .expect("Could not resolve base image directory path")
+            }
+        }
+    };
+}
+
+pub fn create_directories() -> Result<(), io::Error> {
+    DirBuilder::new()
+        .recursive(true)
+        .create(BASE_IMAGE_PATH.to_owned())
+}
+
+pub fn clean_temp_dirs() -> Result<(), io::Error> {
+    let temp_files = read_dir(&TEMP_IMAGE_DIRECTORY.to_owned())?
         .map(|dir_entry| dir_entry.unwrap().path())
         .collect::<Vec<PathBuf>>();
 
-    // Rust is unhappy with cloning it directly into the statement,
-    // So here's a binding.
-
-    let temp_image_files = get_all_directory_image_files(&temp_img_path)?;
-
+    let temp_image_files = get_all_directory_image_files(&TEMP_IMAGE_DIRECTORY.to_owned())?;
     let all_files_are_images = temp_image_files.iter().len() == temp_files.clone().iter().len();
-
     if !all_files_are_images {
         panic!(
             "Non image files found in temp directory.
@@ -55,18 +63,18 @@ pub fn clean_temp_dirs() -> Result<(), io::Error> {
 
     // Checking again...
 
-    if get_all_directory_image_files(&temp_img_path)?.len() == 0 {
+    if !get_all_directory_image_files(&TEMP_IMAGE_DIRECTORY.to_owned())?.len() == 0 {
         panic!(
             "Non image files found in temp directory in second check.
             This should never happen, and indicates that something is wrong with removing files.
             This function is not supposed to be executed outside testing."
         );
-    }
+    }   
 
     // And now we'll remove the directory.
 
-    remove_dir(temp_img_path)
-        .expect("Could not remove temporary image directory");
+    //remove_dir(&TEMP_IMAGE_DIRECTORY.to_owned())
+    //    .expect("Could not remove temporary image directory");
 
     Ok(())
 }

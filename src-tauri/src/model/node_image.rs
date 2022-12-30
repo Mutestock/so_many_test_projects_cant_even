@@ -1,13 +1,15 @@
+use std::{path::PathBuf, str::FromStr};
+
 use chrono::NaiveDateTime;
 use rusqlite::params;
 
-use crate::misc::time_management::NaiveDateTimeExtension;
+use crate::misc::{directories::BASE_IMAGE_PATH, time_management::NaiveDateTimeExtension};
 
 use super::model_common::ModelCommon;
 
 pub struct NodeImage {
     image_title: String,
-    image_path: Option<String>,
+    image_path: PathBuf,
     date_added: NaiveDateTime,
     date_modified: NaiveDateTime,
     node_name: String,
@@ -16,8 +18,8 @@ pub struct NodeImage {
 impl NodeImage {
     pub fn new(image_title: String, node_name: String) -> Self {
         Self {
-            image_title,
-            image_path: None,
+            image_title: image_title.clone(),
+            image_path: BASE_IMAGE_PATH.join(image_title),
             date_added: NaiveDateTime::now(),
             date_modified: NaiveDateTime::now(),
             node_name,
@@ -34,11 +36,10 @@ impl NodeImage {
         node_name: &str,
     ) -> Result<(), rusqlite::Error> {
         connection
-            .prepare(" DELETE FROM NodeImage WHERE node_name = ?1;",)?
+            .prepare(" DELETE FROM NodeImage WHERE node_name = ?1;")?
             .execute(params![node_name])?;
         Ok(())
     }
-
     pub fn update_by_node_name(
         connection: &rusqlite::Connection,
         old_node_name: &str,
@@ -78,7 +79,7 @@ impl ModelCommon<&str> for NodeImage {
             )?
             .execute(params![
                 &self.image_title,
-                &self.image_path,
+                self.image_path.to_str(),
                 self.date_added.to_format(),
                 self.date_modified.to_format(),
                 &self.node_name
@@ -127,14 +128,14 @@ impl ModelCommon<&str> for NodeImage {
                 image_path = ?2,
                 date_added = ?3,
                 date_modified = ?4,
-                node_image = ?5
+                node_name = ?5
             
-            WHERE image_title = ?5
+            WHERE image_title = ?6
         ",
             )?
             .execute(params![
                 &self.image_title,
-                &self.image_path,
+                self.image_path.to_str(),
                 self.date_added.to_format(),
                 NaiveDateTime::now().to_format(),
                 &self.node_name,
@@ -145,13 +146,13 @@ impl ModelCommon<&str> for NodeImage {
 
     fn delete(t: &str, connection: &rusqlite::Connection) -> Result<(), rusqlite::Error> {
         connection
-        .prepare(
-            "
+            .prepare(
+                "
             DELETE FROM NodeImage 
-            WHERE image_title=?1",
-        )?
-        .execute(params![t])?;
-    Ok(())
+            WHERE image_title = ?1;",
+            )?
+            .execute(params![t])?;
+        Ok(())
     }
 
     fn from_row(p_key: Option<&str>, row: &rusqlite::Row) -> Result<Self, rusqlite::Error>
@@ -161,14 +162,20 @@ impl ModelCommon<&str> for NodeImage {
         match p_key {
             Some(val) => Ok(NodeImage {
                 image_title: val.to_owned(),
-                image_path: row.get(0)?,
+                image_path: {
+                    let img_path_as_string: String = row.get(0)?;
+                    PathBuf::from_str(&img_path_as_string).unwrap()
+                },
                 date_added: NaiveDateTime::from_row(row, 1),
                 date_modified: NaiveDateTime::from_row(row, 2),
                 node_name: row.get(3)?,
             }),
             None => Ok(NodeImage {
                 image_title: row.get(0)?,
-                image_path: row.get(1)?,
+                image_path: {
+                    let img_path_as_string: String = row.get(1)?;
+                    PathBuf::from_str(&img_path_as_string).unwrap()
+                },
                 date_added: NaiveDateTime::from_row(row, 2),
                 date_modified: NaiveDateTime::from_row(row, 3),
                 node_name: row.get(4)?,

@@ -25,7 +25,8 @@ fn main() {
                 .create_dir_path()
                 .expect("Directory path creation for sqlite failed");
 
-            create_directories(false).expect("Could not create directories");
+            create_directories()
+                .expect("Could not create directories");
 
             initialize(&SQLITE_CONNECTOR.connect().unwrap()).expect("Initialization failed");
             Ok(())

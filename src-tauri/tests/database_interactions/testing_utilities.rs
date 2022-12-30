@@ -16,8 +16,9 @@ pub fn get_testing_environment() -> SqliteConnector {
     sqlite_connection
 }
 
-pub fn setup(){
-    create_directories(true).expect("Failed to create temp directories pre-testing");
+pub fn setup() {
+    std::env::set_var("MINDMAP_TEST_MOD", "1");
+    create_directories().expect("Failed to create temp directories pre-testing");
 }
 
 pub fn cleanup() {

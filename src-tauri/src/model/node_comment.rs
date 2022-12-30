@@ -80,8 +80,8 @@ impl ModelCommon<&str> for NodeComment {
             (
                 &self.uuid,
                 &self.content,
-                self.date_added.to_string(),
-                self.date_modified.to_string(),
+                self.date_added.to_format(),
+                self.date_modified.to_format(),
                 &self.node_name,
             ),
         )?;

@@ -22,10 +22,11 @@ fn test_read_node_comment() -> Result<(), rusqlite::Error> {
     initialize(&conn)?;
 
     Node::new("Bonk".to_owned(), "event".to_owned()).create(&conn)?;
-    NodeComment::new("Bonk".to_owned(), "This is a comment".to_owned()).create(&conn)?;
+    let node_comment = NodeComment::new("Bonk".to_owned(), "This is a comment".to_owned());
+    node_comment.create(&conn)?;
 
-    let node_comment = NodeComment::read("Bonk", &conn)?;
-    assert_eq!(node_comment.content(), "This is a comment".to_owned());
+    let node_comment_read = NodeComment::read(node_comment.uuid(), &conn)?;
+    assert_eq!(node_comment_read.content(), "This is a comment".to_owned());
 
     Ok(())
 }
@@ -63,6 +64,7 @@ fn test_delete_node_comment() -> Result<(), rusqlite::Error> {
     let node_comments = NodeComment::read_list(&conn)?;
     assert_eq!(node_comments.len(), 3);
     NodeComment::delete(one_of_the_node_comments.uuid(), &conn)?;
+    let node_comments = NodeComment::read_list(&conn)?;
     assert_eq!(node_comments.len(), 2);
 
     Ok(())
