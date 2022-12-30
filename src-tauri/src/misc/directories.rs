@@ -1,6 +1,6 @@
 use std::env;
 use std::{
-    fs::{read_dir, remove_dir, remove_file, DirBuilder},
+    fs::{read_dir, remove_file, DirBuilder},
     io,
     path::PathBuf,
 };
@@ -72,6 +72,9 @@ pub fn clean_temp_dirs() -> Result<(), io::Error> {
     }   
 
     // And now we'll remove the directory.
+    
+    // Note: Causes some errors. Outcommented for now. 
+    // Image testing directory placed in tests file and added to gitignore.
 
     //remove_dir(&TEMP_IMAGE_DIRECTORY.to_owned())
     //    .expect("Could not remove temporary image directory");

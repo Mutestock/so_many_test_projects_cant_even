@@ -1,18 +1,10 @@
-use mindmap::{
-    connection::{connection_common::MindmapConnector, initialize},
-    model::{model_common::ModelCommon, node::Node, node_image::NodeImage},
-};
+use mindmap::model::{model_common::ModelCommon, node::Node, node_image::NodeImage};
 
-use crate::database_interactions::testing_utilities::cleanup;
-
-use super::testing_utilities::{setup, TESTING_SQLITE_CONNECTOR};
+use crate::database_interactions::testing_utilities::{cleanup, get_testing_connection};
 
 #[test]
 fn test_create_node_image() -> Result<(), rusqlite::Error> {
-    setup();
-
-    let conn = TESTING_SQLITE_CONNECTOR.to_owned().connect()?;
-    initialize(&conn)?;
+    let conn = get_testing_connection();
 
     Node::new("Bonk".to_owned(), "event".to_owned()).create(&conn)?;
     NodeImage::new("New Image".to_owned(), "Bonk".to_owned()).create(&conn)?;
@@ -24,16 +16,13 @@ fn test_create_node_image() -> Result<(), rusqlite::Error> {
 
 #[test]
 fn test_read_node_image() -> Result<(), rusqlite::Error> {
-    setup();
-
-    let conn = TESTING_SQLITE_CONNECTOR.to_owned().connect()?;
-    initialize(&conn)?;
+    let conn = get_testing_connection();
 
     Node::new("Bonk".to_owned(), "event".to_owned()).create(&conn)?;
     NodeImage::new("New Image".to_owned(), "Bonk".to_owned()).create(&conn)?;
 
     let node_image = NodeImage::read("New Image", &conn)?;
-    assert_eq!(node_image.node_name(), "Bonk".to_owned());
+    assert_eq!(node_image.unwrap().node_name(), "Bonk".to_owned());
 
     cleanup();
 
@@ -42,17 +31,17 @@ fn test_read_node_image() -> Result<(), rusqlite::Error> {
 
 #[test]
 fn test_update_node_image() -> Result<(), rusqlite::Error> {
-    setup();
-
-    let conn = TESTING_SQLITE_CONNECTOR.to_owned().connect()?;
-    initialize(&conn)?;
+    let conn = get_testing_connection();
 
     Node::new("Bonk".to_owned(), "event".to_owned()).create(&conn)?;
     NodeImage::new("New Image".to_owned(), "Bonk".to_owned()).create(&conn)?;
     NodeImage::new("Modified Image".to_owned(), "Bonk".to_owned()).update("New Image", &conn)?;
 
     let node_image = NodeImage::read("Modified Image", &conn)?;
-    assert_eq!(node_image.image_title(), "Modified Image".to_owned());
+    assert_eq!(
+        node_image.unwrap().image_title(),
+        "Modified Image".to_owned()
+    );
 
     cleanup();
 
@@ -61,10 +50,7 @@ fn test_update_node_image() -> Result<(), rusqlite::Error> {
 
 #[test]
 fn test_delete_node_image() -> Result<(), rusqlite::Error> {
-    setup();
-
-    let conn = TESTING_SQLITE_CONNECTOR.to_owned().connect()?;
-    initialize(&conn)?;
+    let conn = get_testing_connection();
 
     Node::new("Bonk".to_owned(), "event".to_owned()).create(&conn)?;
 
@@ -84,10 +70,7 @@ fn test_delete_node_image() -> Result<(), rusqlite::Error> {
 
 #[test]
 fn test_read_list_node_image() -> Result<(), rusqlite::Error> {
-    setup();
-
-    let conn = TESTING_SQLITE_CONNECTOR.to_owned().connect()?;
-    initialize(&conn)?;
+    let conn = get_testing_connection();
 
     Node::new("Bonk".to_owned(), "event".to_owned()).create(&conn)?;
     NodeImage::new("one".to_owned(), "Bonk".to_owned()).create(&conn)?;
@@ -102,11 +85,21 @@ fn test_read_list_node_image() -> Result<(), rusqlite::Error> {
 }
 
 #[test]
-fn test_read_none_doesnt_cause_errors() {
-    assert_eq!(2, 2);
+fn test_node_image_read_none() -> Result<(), rusqlite::Error> {
+    let conn = get_testing_connection();
+
+    let node_image_read = NodeImage::read("cake", &conn)?;
+    assert_eq!(node_image_read.is_none(), true);
+
+    Ok(())
 }
 
 #[test]
-fn test_read_all_none_does_not_cause_errors() {
-    assert_eq!(2, 2);
+fn test_node_image_read_all_empty() -> Result<(), rusqlite::Error> {
+    let conn = get_testing_connection();
+
+    let node_images = NodeImage::read_list(&conn)?;
+    assert_eq!(node_images.len(), 0);
+
+    Ok(())
 }

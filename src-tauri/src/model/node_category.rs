@@ -28,7 +28,7 @@ impl Display for NodePreset {
     }
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct NodeCategory {
     name: String,
 }
@@ -66,13 +66,22 @@ impl ModelCommon<&str> for NodeCategory {
         Ok(())
     }
 
-    fn read(t: &str, connection: &rusqlite::Connection) -> Result<NodeCategory, rusqlite::Error> {
+    fn read(t: &str, connection: &rusqlite::Connection) -> Result<Option<NodeCategory>, rusqlite::Error> {
         // This is utterly pointless right now
-        connection
+        let mut node_categories = connection
             .prepare("SELECT category_name FROM NodeCategory WHERE category_name = ?1")?
             .query_map([t], |row| NodeCategory::from_row(Some(t), row))?
-            .next()
-            .unwrap()
+            .collect::<Vec<Result<NodeCategory, rusqlite::Error>>>()
+            .into_iter()
+            .map(|node_category_res| Some(node_category_res.unwrap()))
+            .collect::<Vec<Option<NodeCategory>>>();
+
+        if node_categories.len() == 0 {
+            Ok(None)
+        }
+        else {
+            Ok(node_categories.remove(0))
+        }
     }
 
     fn read_list(connection: &rusqlite::Connection) -> Result<Vec<NodeCategory>, rusqlite::Error>

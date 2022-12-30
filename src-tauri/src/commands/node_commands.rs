@@ -16,7 +16,7 @@ pub async fn cmd_new_node(node_category: String, name: String) -> Result<bool, I
 }
 
 #[tauri::command]
-pub async fn cmd_read_node(name: String) -> Result<Node, InvokeError> {
+pub async fn cmd_read_node(name: String) -> Result<Option<Node>, InvokeError> {
     Ok(
         Node::read(&name, &SQLITE_CONNECTOR.to_owned().connect().unwrap())
             .expect("Could not read node"),

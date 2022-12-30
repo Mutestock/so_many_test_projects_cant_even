@@ -82,16 +82,25 @@ impl ModelCommon<&str> for Node {
         Ok(())
     }
 
-    fn read(t: &str, connection: &rusqlite::Connection) -> Result<Node, rusqlite::Error> {
-        connection.prepare(
-            "
+    fn read(t: &str, connection: &rusqlite::Connection) -> Result<Option<Node>, rusqlite::Error> {
+        let mut nodes = connection
+            .prepare(
+                "
                 SELECT date_added, date_modified, primary_image_path, category_name 
                 FROM Node 
                 WHERE name = ?1;",
-        )?
-        .query_map([t], |row| Node::from_row(Some(t), row))?
-        .next()
-        .unwrap()
+            )?
+            .query_map([t], |row| Node::from_row(Some(t), row))?
+            .collect::<Vec<Result<Node, rusqlite::Error>>>()
+            .into_iter()
+            .map(|node_res| Some(node_res.unwrap()))
+            .collect::<Vec<Option<Node>>>();
+
+        if nodes.len() == 0 {
+            Ok(None)
+        } else {
+            Ok(nodes.remove(0))
+        }
     }
 
     fn read_list(connection: &rusqlite::Connection) -> Result<Vec<Node>, rusqlite::Error> {

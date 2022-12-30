@@ -4,6 +4,7 @@ use mindmap::{
     },
     misc::directories::{clean_temp_dirs, create_directories},
 };
+use rusqlite::Connection;
 
 lazy_static::lazy_static! {
     pub static ref TESTING_SQLITE_CONNECTOR: SqliteConnector = get_testing_environment();
@@ -14,6 +15,15 @@ pub fn get_testing_environment() -> SqliteConnector {
         database_file_path: None,
     };
     sqlite_connection
+}
+
+pub fn get_testing_connection() -> Connection {
+    let conn = SqliteConnector {
+        database_file_path: None,
+    }.connect().unwrap();
+    initialize(&conn).unwrap();
+    setup();
+    conn
 }
 
 pub fn setup() {

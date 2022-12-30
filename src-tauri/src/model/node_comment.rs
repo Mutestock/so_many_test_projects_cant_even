@@ -89,8 +89,8 @@ impl ModelCommon<&str> for NodeComment {
         Ok(())
     }
 
-    fn read(t: &str, connection: &rusqlite::Connection) -> Result<NodeComment, rusqlite::Error> {
-        connection
+    fn read(t: &str, connection: &rusqlite::Connection) -> Result<Option<NodeComment>, rusqlite::Error> {
+        let mut node_comments = connection
             .prepare(
                 "
                 SELECT node_name, content, date_added, date_modified 
@@ -98,8 +98,17 @@ impl ModelCommon<&str> for NodeComment {
                 WHERE uuid=?1;",
             )?
             .query_map([t], |row| NodeComment::from_row(Some(t), row))?
-            .next()
-            .unwrap()
+            .collect::<Vec<Result<NodeComment, rusqlite::Error>>>()
+            .into_iter()
+            .map(|node_res| Some(node_res.unwrap()))
+            .collect::<Vec<Option<NodeComment>>>();
+        
+        if node_comments.len() == 0 {
+            Ok(None)
+        }
+        else{
+            Ok(node_comments.remove(0))
+        }
     }
 
     fn read_list(connection: &rusqlite::Connection) -> Result<Vec<NodeComment>, rusqlite::Error>
