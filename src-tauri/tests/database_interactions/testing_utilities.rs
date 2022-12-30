@@ -40,8 +40,7 @@ struct Message(String);
 
 #[test]
 fn test_initialize() {
-    let conn = TESTING_SQLITE_CONNECTOR.to_owned().connect().unwrap();
-    initialize(&conn).expect("Could not initialize table creation in testing");
+    let conn = get_testing_connection();
     let mut stmt = conn
         .prepare("SELECT name FROM sqlite_schema WHERE type ='table' AND name NOT LIKE 'sqlite_%';")
         .unwrap();

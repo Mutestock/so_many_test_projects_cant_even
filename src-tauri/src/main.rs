@@ -3,7 +3,10 @@
     windows_subsystem = "windows"
 )]
 
-use mindmap::commands::{node_commands::*, sqlite_commands::*};
+use mindmap::commands::model_commands::{
+    node_category_commands::*, node_commands::*, node_comment_commands::*, node_image_commands::*,
+};
+use mindmap::commands::sqlite_commands::*;
 use mindmap::connection::{
     connection_common::MindmapConnector, initialize, sqlite_connection::SQLITE_CONNECTOR,
 };
@@ -19,14 +22,28 @@ fn main() {
             cmd_append_comment_to_node,
             cmd_sqlite_ping,
             cmd_read_node,
+            cmd_create_node_image,
+            cmd_read_node_image,
+            cmd_update_node_image,
+            cmd_delete_node_image,
+            cmd_read_list_node_image,
+            cmd_create_node_category,
+            cmd_read_node_category,
+            cmd_update_node_category,
+            cmd_delete_node_category,
+            cmd_read_list_node_category,
+            cmd_create_node_comment,
+            cmd_read_node_comment,
+            cmd_update_node_comment,
+            cmd_delete_node_comment,
+            cmd_read_list_node_comment,
         ])
         .setup(|_| {
             SQLITE_CONNECTOR
                 .create_dir_path()
                 .expect("Directory path creation for sqlite failed");
 
-            create_directories()
-                .expect("Could not create directories");
+            create_directories().expect("Could not create directories");
 
             initialize(&SQLITE_CONNECTOR.connect().unwrap()).expect("Initialization failed");
             Ok(())
