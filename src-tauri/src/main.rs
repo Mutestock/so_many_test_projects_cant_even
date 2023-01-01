@@ -18,24 +18,21 @@ fn main() {
         .menu(create_menu())
         .on_menu_event(|event| handle_menu_event(event))
         .invoke_handler(tauri::generate_handler![
-            cmd_new_node,
-            cmd_append_comment_to_node,
+            cmd_create_node,
             cmd_sqlite_ping,
             cmd_read_node,
             cmd_create_node_image,
             cmd_read_node_image,
-            cmd_update_node_image,
             cmd_delete_node_image,
             cmd_read_list_node_image,
             cmd_create_node_category,
             cmd_read_node_category,
-            cmd_update_node_category,
             cmd_delete_node_category,
             cmd_read_list_node_category,
             cmd_create_node_comment,
-            cmd_read_node_comment,
-            cmd_update_node_comment,
-            cmd_delete_node_comment,
+            cmd_read_node_comment_by_node_name,
+            cmd_update_node_comment_content_by_node_name,
+            cmd_delete_node_comment_by_node_name,
             cmd_read_list_node_comment,
         ])
         .setup(|_| {

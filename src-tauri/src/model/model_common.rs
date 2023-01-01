@@ -12,6 +12,8 @@ pub trait ModelCommon<T> {
         Self: Sized;
     fn update(&self, t: T, connection: &rusqlite::Connection) -> Result<(), rusqlite::Error>;
     fn delete(t: T, connection: &rusqlite::Connection) -> Result<(), rusqlite::Error>;
+
+    // This needs to go
     fn from_row(p_key: Option<&str>, row: &Row) -> Result<Self, rusqlite::Error>
     where
         Self: Sized;

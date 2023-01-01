@@ -2,11 +2,13 @@ use std::{path::PathBuf, str::FromStr};
 
 use chrono::NaiveDateTime;
 use rusqlite::params;
+use serde::{Deserialize, Serialize};
 
 use crate::misc::{directories::BASE_IMAGE_PATH, time_management::NaiveDateTimeExtension};
 
 use super::model_common::ModelCommon;
 
+#[derive(Serialize, Deserialize)]
 pub struct NodeImage {
     image_title: String,
     image_path: PathBuf,
@@ -109,7 +111,7 @@ impl ModelCommon<&str> for NodeImage {
             Ok(None)
         }
         else {
-            Ok(node_images.remove(0))
+            Ok(node_images.swap_remove(0))
         }
     }
 

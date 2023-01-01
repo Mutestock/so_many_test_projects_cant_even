@@ -99,7 +99,7 @@ impl ModelCommon<&str> for Node {
         if nodes.len() == 0 {
             Ok(None)
         } else {
-            Ok(nodes.remove(0))
+            Ok(nodes.swap_remove(0))
         }
     }
 

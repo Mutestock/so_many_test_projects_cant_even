@@ -4,6 +4,7 @@ use super::model_common::ModelCommon;
 use chrono::NaiveDateTime;
 use rusqlite::params;
 use serde::{Deserialize, Serialize};
+use smallvec::{smallvec, SmallVec};
 use uuid::Uuid;
 
 #[derive(Serialize, Deserialize)]
@@ -41,15 +42,55 @@ impl NodeComment {
         Ok(())
     }
 
-    pub fn update_by_node_name(
+    pub fn update_node_comment_content_by_node_name(
         connection: &rusqlite::Connection,
         old_node_name: &str,
-        new_node_name: &str,
-    ) -> Result<(), rusqlite::Error> {
+        new_comment_content: &str,
+    ) -> Result<bool, rusqlite::Error> {
         connection
-            .prepare("UPDATE NodeComment SET node_name = ?1 WHERE node_name = ?2;")?
-            .execute(params![old_node_name, new_node_name])?;
-        Ok(())
+            .prepare(
+                "
+                UPDATE NodeComment
+                SET content = ?1
+                WHERE node_name = ?2;
+            ",
+            )?
+            .execute(params![new_comment_content, old_node_name])?;
+
+        Ok(true)
+    }
+
+    fn read_by_identifier(
+        connection: &rusqlite::Connection,
+        identifier: &str,
+        identifier_value: &str,
+    ) -> Result<Option<NodeComment>, rusqlite::Error> {
+        let mut node_comments = connection
+            .prepare(&format!(
+                "
+                SELECT uuid, node_name, content, date_added, date_modified 
+                FROM NodeComment 
+                WHERE {}=?1;",
+                identifier
+            ))?
+            .query_map([identifier_value], |row| NodeComment::from_row(None, row))?
+            .collect::<Vec<Result<NodeComment, rusqlite::Error>>>()
+            .into_iter()
+            .map(|node_res| Some(node_res.unwrap()))
+            .collect::<Vec<Option<NodeComment>>>();
+
+        if node_comments.len() == 0 {
+            Ok(None)
+        } else {
+            Ok(node_comments.swap_remove(0))
+        }
+    }
+
+    pub fn read_node_comment_by_node_name(
+        connection: &rusqlite::Connection,
+        node_name: &str,
+    ) -> Result<Option<NodeComment>, rusqlite::Error> {
+        Self::read_by_identifier(connection, "node_name", node_name)
     }
 }
 
@@ -89,26 +130,11 @@ impl ModelCommon<&str> for NodeComment {
         Ok(())
     }
 
-    fn read(t: &str, connection: &rusqlite::Connection) -> Result<Option<NodeComment>, rusqlite::Error> {
-        let mut node_comments = connection
-            .prepare(
-                "
-                SELECT node_name, content, date_added, date_modified 
-                FROM NodeComment 
-                WHERE uuid=?1;",
-            )?
-            .query_map([t], |row| NodeComment::from_row(Some(t), row))?
-            .collect::<Vec<Result<NodeComment, rusqlite::Error>>>()
-            .into_iter()
-            .map(|node_res| Some(node_res.unwrap()))
-            .collect::<Vec<Option<NodeComment>>>();
-        
-        if node_comments.len() == 0 {
-            Ok(None)
-        }
-        else{
-            Ok(node_comments.remove(0))
-        }
+    fn read(
+        t: &str,
+        connection: &rusqlite::Connection,
+    ) -> Result<Option<NodeComment>, rusqlite::Error> {
+        Self::read_by_identifier(connection, "uuid", t)
     }
 
     fn read_list(connection: &rusqlite::Connection) -> Result<Vec<NodeComment>, rusqlite::Error>

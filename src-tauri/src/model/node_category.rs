@@ -80,7 +80,7 @@ impl ModelCommon<&str> for NodeCategory {
             Ok(None)
         }
         else {
-            Ok(node_categories.remove(0))
+            Ok(node_categories.swap_remove(0))
         }
     }
 

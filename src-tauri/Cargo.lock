@@ -1478,9 +1478,9 @@ dependencies = [
  "rusqlite",
  "serde",
  "serde_json",
+ "smallvec",
  "tauri",
  "tauri-build",
- "tempfile",
  "uuid 1.2.2",
 ]
 
