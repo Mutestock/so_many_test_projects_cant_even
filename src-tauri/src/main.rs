@@ -34,6 +34,7 @@ fn main() {
             cmd_update_node_comment_content_by_node_name,
             cmd_delete_node_comment_by_node_name,
             cmd_read_list_node_comment,
+            cmd_read_list_node
         ])
         .setup(|_| {
             SQLITE_CONNECTOR
