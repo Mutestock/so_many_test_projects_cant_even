@@ -14,7 +14,7 @@
             currentlySelectedCategoryValue != undefined &&
             currentlySelectedCategoryValue != ""
         ) {
-            readNodesByCategory(currentlySelectedCategoryValue);
+            readNodesByCategory();
         }
     }
 
@@ -26,9 +26,9 @@
         allNodes = await invoke("cmd_read_list_node", {});
     }
 
-    async function readNodesByCategory(currentlySelectedCategory) {
+    async function readNodesByCategory() {
         allNodes = await invoke("cmd_read_nodes_by_node_category", {
-            nodeCategory: currentlySelectedCategory,
+            nodeCategory: currentlySelectedCategoryValue,
         });
     }
 
@@ -36,7 +36,7 @@
         await readAllNodes();
     });
 
-    onDestroy(() => {
+    onDestroy(async () => {
         currentlySelectedCategory.set("");
         unsubscribe();
     });
