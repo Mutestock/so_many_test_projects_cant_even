@@ -31,6 +31,30 @@ impl Node {
         &self.node_category
     }
 
+    pub fn read_nodes_by_node_category(
+        connection: &rusqlite::Connection,
+        node_category: &str,
+    ) -> Result<Vec<Node>, rusqlite::Error> {
+        Self::read_nodes_by_identifier(connection, "category_name", node_category)
+    }
+
+    fn read_nodes_by_identifier(
+        connection: &rusqlite::Connection,
+        identifier: &str,
+        identifier_value: &str,
+    ) -> Result<Vec<Node>, rusqlite::Error> {
+        connection
+            .prepare(&format!(
+                "
+            SELECT name, date_added, date_modified, primary_image_path, category_name
+            FROM Node 
+            WHERE {}=?1;",
+                identifier
+            ))?
+            .query_map([identifier_value], |row| Node::from_row(None, row))?
+            .collect()
+    }
+
     pub fn update_node_category(
         &self,
         new_category: &str,
@@ -40,7 +64,7 @@ impl Node {
             .prepare(
                 "
                 UPDATE Node
-                SET node_category = ?1
+                SET category_name = ?1
                 WHERE name = ?2
             ",
             )?

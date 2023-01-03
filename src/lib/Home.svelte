@@ -45,20 +45,6 @@
     <button on:click={pingSqlite}> Do the ping</button>
   </div>
   <div class="row">
-    <button on:click={sqliteInsertSimple}>Sqlite Insert</button>
-    <p>Success: {sqliteSimpleInsertSucceeded}</p>
-  </div>
-  <div class="row">
-    <button on:click={sqliteReadSimple}>Sqlite Read</button>
-    <p>Get output: {sqliteSimpleRes}</p>
-  </div>
-  <div class="row">
-    <p>misc:</p>
     <p>Sqlite ping res: {sqlitePingRes}</p>
-  </div>
-  <div class="row">
-    <p>Sqlite all categories:</p>
-    <p>{sqliteCategories}</p>
-    <p>{oneCategory}</p>
   </div>
 </div>

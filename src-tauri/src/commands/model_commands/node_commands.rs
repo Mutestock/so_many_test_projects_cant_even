@@ -40,3 +40,16 @@ pub async fn cmd_read_list_node() -> Result<Vec<Node>, InvokeError> {
 
     Ok(node_list)
 }
+
+#[tauri::command]
+pub async fn cmd_read_nodes_by_node_category(
+    node_category: String,
+) -> Result<Vec<Node>, InvokeError> {
+    let node_list = Node::read_nodes_by_node_category(
+        &SQLITE_CONNECTOR.to_owned().connect().unwrap(),
+        &node_category,
+    )
+    .expect("Could not read nodes by node category");
+
+    Ok(node_list)
+}
