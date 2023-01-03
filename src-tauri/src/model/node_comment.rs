@@ -4,7 +4,6 @@ use super::model_common::ModelCommon;
 use chrono::NaiveDateTime;
 use rusqlite::params;
 use serde::{Deserialize, Serialize};
-use smallvec::{smallvec, SmallVec};
 use uuid::Uuid;
 
 #[derive(Serialize, Deserialize)]

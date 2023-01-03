@@ -2,7 +2,7 @@ use tauri::InvokeError;
 
 use crate::{
     connection::{connection_common::MindmapConnector, sqlite_connection::SQLITE_CONNECTOR},
-    model::{model_common::ModelCommon, node_category::{NodeCategory, self}},
+    model::{model_common::ModelCommon, node_category::{NodeCategory}},
 };
 
 #[tauri::command]

@@ -1,24 +1,44 @@
 <script>
     import { onMount } from "svelte";
     import { invoke } from "@tauri-apps/api/tauri";
+    import { currentlySelectedCategory } from "$lib/stores/overviewStore";
     import NavBar from "$lib/NavBar.svelte";
     import NodeCategoryDropdown from "$lib/NodeCategoryDropdown.svelte";
+    import { onDestroy } from "svelte";
 
-    let visibleNodes = [];
-    let currentSelectedCategory = "";
+    let allNodes = [];
+    let currentlySelectedCategoryValue;
+    $: {
+        if (
+            currentlySelectedCategoryValue != null &&
+            currentlySelectedCategoryValue != undefined &&
+            currentlySelectedCategoryValue != ""
+        ) {
+            readNodesByCategory(currentlySelectedCategoryValue);
+        }
+    }
+
+    const unsubscribe = currentlySelectedCategory.subscribe((value) => {
+        currentlySelectedCategoryValue = value;
+    });
 
     async function readAllNodes() {
         allNodes = await invoke("cmd_read_list_node", {});
     }
 
-    async function readNodesByCategory() {
+    async function readNodesByCategory(currentlySelectedCategory) {
         allNodes = await invoke("cmd_read_nodes_by_node_category", {
-            nodeCategory: currentCategory,
+            nodeCategory: currentlySelectedCategory,
         });
     }
 
     onMount(async () => {
         await readAllNodes();
+    });
+
+    onDestroy(() => {
+        currentlySelectedCategory.set("");
+        unsubscribe();
     });
 </script>
 
@@ -26,8 +46,8 @@
 
 <div>
     <div>
-        <p>Selected Category = {currentSelectedCategory}</p> 
-        <NodeCategoryDropdown selected={currentSelectedCategory} />
+        <p>Selected Category = {currentlySelectedCategoryValue}</p>
+        <NodeCategoryDropdown />
     </div>
     <p>Nodes:</p>
     <table>
@@ -37,7 +57,7 @@
             <th>Date Modified</th>
             <th>Node Category</th>
         </tr>
-        {#each visibleNodes as { name, date_added, date_modified, primary_image_path, node_category }}
+        {#each allNodes as { name, date_added, date_modified, primary_image_path, node_category }}
             <tr>
                 <td>{name}</td>
                 <td>{date_added}</td>
