@@ -39,9 +39,13 @@ impl ModelCommon<&str> for NodeCategory {
             (),
         )?;
         let mut query = String::from("INSERT OR IGNORE INTO NodeCategory (category_name) VALUES");
-        DEFAULT_CATEGORIES
-            .iter()
-            .for_each(|x| query = format!("{}, ('{}')", query, x));
+
+        DEFAULT_CATEGORIES.iter().for_each(|x| {
+            query = format!("{} ('{}')", query, x);
+            if DEFAULT_CATEGORIES.last() != Some(x) {
+                query = format!("{},", query);
+            }
+        });
         query = format!("{};", query);
 
         connection.execute(&query, ())?;
