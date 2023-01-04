@@ -1,5 +1,5 @@
 use crate::{
-    commands::command_utils::{CommandMessageComposable, SqliteCommandMessage},
+    commands::command_utils::{CommandResponseComposable, SqliteCommandResponse},
     connection::sqlite_connection::get_sqlite_handle,
     model::{model_common::ModelCommon, node::Node},
 };
@@ -9,8 +9,8 @@ use tauri::InvokeError;
 pub async fn cmd_create_node(
     node_category: String,
     name: String,
-) -> Result<SqliteCommandMessage<usize>, InvokeError> {
-    Ok(SqliteCommandMessage::to_command_message(
+) -> Result<SqliteCommandResponse<usize>, InvokeError> {
+    Ok(SqliteCommandResponse::to_command_response(
         Node::new(name, node_category).create(&get_sqlite_handle()),
     ))
 }
@@ -18,8 +18,8 @@ pub async fn cmd_create_node(
 #[tauri::command]
 pub async fn cmd_read_node(
     name: String,
-) -> Result<SqliteCommandMessage<Option<Node>>, InvokeError> {
-    Ok(Option::<Node>::to_command_message(Node::read(
+) -> Result<SqliteCommandResponse<Option<Node>>, InvokeError> {
+    Ok(Option::<Node>::to_command_response(Node::read(
         &name,
         &get_sqlite_handle(),
     )))
@@ -28,16 +28,16 @@ pub async fn cmd_read_node(
 #[tauri::command]
 pub async fn cmd_delete_node(
     node_name: String,
-) -> Result<SqliteCommandMessage<usize>, InvokeError> {
-    Ok(SqliteCommandMessage::to_command_message(Node::delete(
+) -> Result<SqliteCommandResponse<usize>, InvokeError> {
+    Ok(SqliteCommandResponse::to_command_response(Node::delete(
         &node_name,
         &get_sqlite_handle(),
     )))
 }
 
 #[tauri::command]
-pub async fn cmd_read_list_node() -> Result<SqliteCommandMessage<Vec<Node>>, InvokeError> {
-    Ok(Vec::<Node>::to_command_message(Node::read_list(
+pub async fn cmd_read_list_node() -> Result<SqliteCommandResponse<Vec<Node>>, InvokeError> {
+    Ok(Vec::<Node>::to_command_response(Node::read_list(
         &get_sqlite_handle(),
     )))
 }
@@ -45,8 +45,8 @@ pub async fn cmd_read_list_node() -> Result<SqliteCommandMessage<Vec<Node>>, Inv
 #[tauri::command]
 pub async fn cmd_read_nodes_by_node_category(
     node_category: String,
-) -> Result<SqliteCommandMessage<Vec<Node>>, InvokeError> {
-    Ok(Vec::<Node>::to_command_message(
+) -> Result<SqliteCommandResponse<Vec<Node>>, InvokeError> {
+    Ok(Vec::<Node>::to_command_response(
         Node::read_nodes_by_node_category(&get_sqlite_handle(), &node_category),
     ))
 }

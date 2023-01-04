@@ -3,7 +3,7 @@ use rusqlite::params;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    commands::command_utils::CommandMessageComposable,
+    commands::command_utils::CommandResponseComposable,
     misc::time_management::NaiveDateTimeExtension, model::model_common::ModelCommon,
 };
 
@@ -187,6 +187,6 @@ impl ModelCommon<&str> for Node {
     }
 }
 
-impl CommandMessageComposable<Node> for Node {}
-impl CommandMessageComposable<Option<Node>> for Option<Node> {}
-impl CommandMessageComposable<Vec<Node>> for Vec<Node> {}
+impl CommandResponseComposable<Node> for Node {}
+impl CommandResponseComposable<Option<Node>> for Option<Node> {}
+impl CommandResponseComposable<Vec<Node>> for Vec<Node> {}

@@ -5,7 +5,7 @@ use rusqlite::params;
 use serde::{Deserialize, Serialize};
 
 use crate::{
-    commands::command_utils::CommandMessageComposable,
+    commands::command_utils::CommandResponseComposable,
     misc::{directories::BASE_IMAGE_PATH, time_management::NaiveDateTimeExtension},
 };
 
@@ -197,6 +197,6 @@ impl ModelCommon<&str> for NodeImage {
     }
 }
 
-impl CommandMessageComposable<NodeImage> for NodeImage {}
-impl CommandMessageComposable<Option<NodeImage>> for Option<NodeImage> {}
-impl CommandMessageComposable<Vec<NodeImage>> for Vec<NodeImage> {}
+impl CommandResponseComposable<NodeImage> for NodeImage {}
+impl CommandResponseComposable<Option<NodeImage>> for Option<NodeImage> {}
+impl CommandResponseComposable<Vec<NodeImage>> for Vec<NodeImage> {}

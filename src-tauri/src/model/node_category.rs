@@ -1,32 +1,46 @@
+use regex::Regex;
 use rusqlite::params;
 use serde::{Deserialize, Serialize};
 
-use crate::commands::command_utils::CommandMessageComposable;
-
 use super::{model_common::ModelCommon, node::Node};
+use crate::commands::command_utils::CommandResponseComposable;
 
-const DEFAULT_CATEGORIES: [&str; 8] = [
-    "event",
-    "person",
-    "document",
-    "location",
-    "appointment",
-    "bill",
-    "warranty",
-    "none",
-];
+lazy_static::lazy_static! {
+    pub static ref DEFAULT_CATEGORIES: [NodeCategory; 8] = [
+        NodeCategory::new("event".to_owned(), "3C92E8".to_owned()),
+        NodeCategory::new("person".to_owned(), "4A3CE8".to_owned()),
+        NodeCategory::new("document".to_owned(), "1DADA6".to_owned()),
+        NodeCategory::new("location".to_owned(), "BF5217".to_owned()),
+        NodeCategory::new("appointment".to_owned(), "C7BC77".to_owned()),
+        NodeCategory::new("bill".to_owned(), "A88D20".to_owned()),
+        NodeCategory::new("warranty".to_owned(), "A1571A".to_owned()),
+        NodeCategory::new("none".to_owned(), "74A37D".to_owned()),
+
+    ];
+
+}
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct NodeCategory {
     name: String,
+    color_code_hex: String,
 }
 
 impl NodeCategory {
-    pub fn new(name: String) -> Self {
-        Self { name }
+    pub fn new(name: String, color_code_hex: String) -> Self {
+        Self {
+            name,
+            color_code_hex,
+        }
     }
     pub fn name(&self) -> &str {
         &self.name
+    }
+
+    pub fn is_valid_hex(color_code_hex: &str) -> bool {
+        Regex::new("^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$")
+            .unwrap()
+            .is_match(color_code_hex)
     }
 }
 
@@ -34,15 +48,18 @@ impl ModelCommon<&str> for NodeCategory {
     fn init_script(connection: &rusqlite::Connection) -> Result<(), rusqlite::Error> {
         connection.execute(
             "CREATE TABLE IF NOT EXISTS NodeCategory(
-                category_name TEXT NOT NULL UNIQUE PRIMARY KEY
+                category_name TEXT NOT NULL UNIQUE PRIMARY KEY,
+                color_code_hex TEXT NOT NULL
             );",
             (),
         )?;
-        let mut query = String::from("INSERT OR IGNORE INTO NodeCategory (category_name) VALUES");
+        let mut query = String::from(
+            "INSERT OR IGNORE INTO NodeCategory (category_name, color_code_hex) VALUES",
+        );
 
         DEFAULT_CATEGORIES.iter().for_each(|x| {
-            query = format!("{} ('{}')", query, x);
-            if DEFAULT_CATEGORIES.last() != Some(x) {
+            query = format!("{} ('{}', '{}')", query, x.name, x.color_code_hex);
+            if DEFAULT_CATEGORIES.last().unwrap().name != x.name {
                 query = format!("{},", query);
             }
         });
@@ -53,9 +70,13 @@ impl ModelCommon<&str> for NodeCategory {
     }
 
     fn create(&self, connection: &rusqlite::Connection) -> Result<usize, rusqlite::Error> {
+        if !NodeCategory::is_valid_hex(&self.color_code_hex) {
+            return Ok(0);
+        }
+
         connection.execute(
-            "INSERT INTO NodeCategory(category_name) VALUES (?1);",
-            (&self.name,),
+            "INSERT INTO NodeCategory(category_name, color_code_hex) VALUES (?1, ?2);",
+            (&self.name, &self.color_code_hex),
         )
     }
 
@@ -63,9 +84,10 @@ impl ModelCommon<&str> for NodeCategory {
         t: &str,
         connection: &rusqlite::Connection,
     ) -> Result<Option<NodeCategory>, rusqlite::Error> {
-        // This is utterly pointless right now
         let mut node_categories = connection
-            .prepare("SELECT category_name FROM NodeCategory WHERE category_name = ?1")?
+            .prepare(
+                "SELECT category_name, color_code_hex FROM NodeCategory WHERE category_name = ?1",
+            )?
             .query_map([t], |row| NodeCategory::from_row(Some(t), row))?
             .collect::<Vec<Result<NodeCategory, rusqlite::Error>>>()
             .into_iter()
@@ -84,18 +106,31 @@ impl ModelCommon<&str> for NodeCategory {
         Self: Sized,
     {
         connection
-            .prepare("SELECT category_name FROM NodeCategory")?
+            .prepare("SELECT category_name, color_code_hex FROM NodeCategory")?
             .query_map([], |row| NodeCategory::from_row(None, row))?
             .collect()
     }
 
     fn update(&self, t: &str, connection: &rusqlite::Connection) -> Result<usize, rusqlite::Error> {
+        if !NodeCategory::is_valid_hex(&self.color_code_hex) {
+            return Ok(0);
+        }
+
         Node::read_list(connection)?
             .iter()
             .for_each(|node| node.update_node_category(t, connection).unwrap());
         connection
-            .prepare("UPDATE NodeCategory SET category_name = ?1 WHERE category_name = ?2")?
-            .execute(params![self.name, t])
+            .prepare(
+                "
+                UPDATE NodeCategory 
+                SET category_name = ?1, 
+                    color_code_hex = ?2
+                
+                WHERE category_name = ?3
+
+                ",
+            )?
+            .execute(params![self.name, self.color_code_hex, t])
     }
 
     fn delete(t: &str, connection: &rusqlite::Connection) -> Result<usize, rusqlite::Error> {
@@ -118,12 +153,16 @@ impl ModelCommon<&str> for NodeCategory {
         match p_key {
             Some(val) => Ok(NodeCategory {
                 name: val.to_owned(),
+                color_code_hex: row.get(0)?,
             }),
-            None => Ok(NodeCategory { name: row.get(0)? }),
+            None => Ok(NodeCategory {
+                name: row.get(0)?,
+                color_code_hex: row.get(1)?,
+            }),
         }
     }
 }
 
-impl CommandMessageComposable<NodeCategory> for NodeCategory {}
-impl CommandMessageComposable<Option<NodeCategory>> for Option<NodeCategory> {}
-impl CommandMessageComposable<Vec<NodeCategory>> for Vec<NodeCategory> {}
+impl CommandResponseComposable<NodeCategory> for NodeCategory {}
+impl CommandResponseComposable<Option<NodeCategory>> for Option<NodeCategory> {}
+impl CommandResponseComposable<Vec<NodeCategory>> for Vec<NodeCategory> {}

@@ -1,5 +1,5 @@
 use crate::{
-    commands::command_utils::CommandMessageComposable,
+    commands::command_utils::CommandResponseComposable,
     misc::time_management::NaiveDateTimeExtension,
 };
 
@@ -199,6 +199,6 @@ impl ModelCommon<&str> for NodeComment {
     }
 }
 
-impl CommandMessageComposable<NodeComment> for NodeComment {}
-impl CommandMessageComposable<Option<NodeComment>> for Option<NodeComment> {}
-impl CommandMessageComposable<Vec<NodeComment>> for Vec<NodeComment> {}
+impl CommandResponseComposable<NodeComment> for NodeComment {}
+impl CommandResponseComposable<Option<NodeComment>> for Option<NodeComment> {}
+impl CommandResponseComposable<Vec<NodeComment>> for Vec<NodeComment> {}

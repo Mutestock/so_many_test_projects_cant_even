@@ -1,7 +1,7 @@
 use tauri::InvokeError;
 
 use crate::{
-    commands::command_utils::{CommandMessageComposable, SqliteCommandMessage},
+    commands::command_utils::{CommandResponseComposable, SqliteCommandResponse},
     connection::sqlite_connection::get_sqlite_handle,
     model::{model_common::ModelCommon, node_comment::NodeComment},
 };
@@ -10,8 +10,8 @@ use crate::{
 pub async fn cmd_create_node_comment(
     node_name: String,
     comment_content: String,
-) -> Result<SqliteCommandMessage<usize>, InvokeError> {
-    Ok(SqliteCommandMessage::to_command_message(
+) -> Result<SqliteCommandResponse<usize>, InvokeError> {
+    Ok(SqliteCommandResponse::to_command_response(
         NodeComment::new(node_name, comment_content).create(&get_sqlite_handle()),
     ))
 }
@@ -20,8 +20,8 @@ pub async fn cmd_create_node_comment(
 pub async fn cmd_update_node_comment_content_by_node_name(
     node_name: String,
     content: String,
-) -> Result<SqliteCommandMessage<usize>, InvokeError> {
-    Ok(SqliteCommandMessage::to_command_message(
+) -> Result<SqliteCommandResponse<usize>, InvokeError> {
+    Ok(SqliteCommandResponse::to_command_response(
         NodeComment::update_node_comment_content_by_node_name(
             &get_sqlite_handle(),
             &node_name,
@@ -33,8 +33,8 @@ pub async fn cmd_update_node_comment_content_by_node_name(
 #[tauri::command]
 pub async fn cmd_read_node_comment_by_node_name(
     node_name: String,
-) -> Result<SqliteCommandMessage<Option<NodeComment>>, InvokeError> {
-    Ok(Option::<NodeComment>::to_command_message(
+) -> Result<SqliteCommandResponse<Option<NodeComment>>, InvokeError> {
+    Ok(Option::<NodeComment>::to_command_response(
         NodeComment::read_node_comment_by_node_name(&get_sqlite_handle(), &node_name),
     ))
 }
@@ -42,16 +42,16 @@ pub async fn cmd_read_node_comment_by_node_name(
 #[tauri::command]
 pub async fn cmd_delete_node_comment_by_node_name(
     node_name: String,
-) -> Result<SqliteCommandMessage<usize>, InvokeError> {
-    Ok(SqliteCommandMessage::to_command_message(
+) -> Result<SqliteCommandResponse<usize>, InvokeError> {
+    Ok(SqliteCommandResponse::to_command_response(
         NodeComment::delete_by_node_name(&get_sqlite_handle(), &node_name),
     ))
 }
 
 #[tauri::command]
 pub async fn cmd_read_list_node_comment(
-) -> Result<SqliteCommandMessage<Vec<NodeComment>>, InvokeError> {
-    Ok(Vec::<NodeComment>::to_command_message(
+) -> Result<SqliteCommandResponse<Vec<NodeComment>>, InvokeError> {
+    Ok(Vec::<NodeComment>::to_command_response(
         NodeComment::read_list(&get_sqlite_handle()),
     ))
 }
