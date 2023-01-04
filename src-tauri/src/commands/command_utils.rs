@@ -1,20 +1,15 @@
-use serde::{Serialize, Deserialize};
-
-
-
-
+use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Clone)]
-pub struct SqliteCommandMessage<T: Serialize>{
+pub struct SqliteCommandMessage<T: Serialize> {
     pub payload: Option<T>,
     pub error_code: Option<String>,
-    pub msg: Option<String>
+    pub msg: Option<String>,
 }
 
-
-pub trait CommandMessageComposable<T: Serialize>{
+pub trait CommandMessageComposable<T: Serialize> {
     fn to_command_message(result: Result<T, rusqlite::Error>) -> SqliteCommandMessage<T> {
-        match result{
+        match result {
             Ok(v) => SqliteCommandMessage {
                 payload: Some(v),
                 error_code: None,
@@ -29,5 +24,5 @@ pub trait CommandMessageComposable<T: Serialize>{
     }
 }
 
-impl CommandMessageComposable<usize> for SqliteCommandMessage<usize>{}
-impl CommandMessageComposable<bool> for SqliteCommandMessage<bool>{}
+impl CommandMessageComposable<usize> for SqliteCommandMessage<usize> {}
+impl CommandMessageComposable<bool> for SqliteCommandMessage<bool> {}

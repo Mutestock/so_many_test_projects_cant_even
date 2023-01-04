@@ -1,5 +1,3 @@
-use std::fmt::Display;
-
 use rusqlite::params;
 use serde::{Deserialize, Serialize};
 
@@ -7,28 +5,16 @@ use crate::commands::command_utils::CommandMessageComposable;
 
 use super::{model_common::ModelCommon, node::Node};
 
-#[derive(Serialize, Deserialize, PartialEq)]
-pub enum NodePreset {
-    Event,
-    Person,
-    Document,
-    Location,
-    Appointment,
-    Custom,
-}
-
-impl Display for NodePreset {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            NodePreset::Event => write!(f, "Event"),
-            NodePreset::Person => write!(f, "Person"),
-            NodePreset::Document => write!(f, "Document"),
-            NodePreset::Location => write!(f, "Location"),
-            NodePreset::Appointment => write!(f, "Appointment"),
-            NodePreset::Custom => write!(f, "Custom"),
-        }
-    }
-}
+const DEFAULT_CATEGORIES: [&str; 8] = [
+    "event",
+    "person",
+    "document",
+    "location",
+    "appointment",
+    "bill",
+    "warranty",
+    "none",
+];
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct NodeCategory {
@@ -52,11 +38,13 @@ impl ModelCommon<&str> for NodeCategory {
             );",
             (),
         )?;
-        connection.execute(
-            "INSERT OR IGNORE INTO NodeCategory (category_name) 
-                VALUES ('event'), ('person'), ('document'), ('location'), ('appointment'), ('none');",
-            (),
-        )?;
+        let mut query = String::from("INSERT OR IGNORE INTO NodeCategory (category_name) VALUES");
+        DEFAULT_CATEGORIES
+            .iter()
+            .for_each(|x| query = format!("{}, ('{}')", query, x));
+        query = format!("{};", query);
+
+        connection.execute(&query, ())?;
         Ok(())
     }
 
