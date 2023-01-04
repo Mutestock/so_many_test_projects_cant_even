@@ -24,13 +24,17 @@
     });
 
     async function readAllNodes() {
-        allNodes = await invoke("cmd_read_list_node", {});
+        let response = await invoke("cmd_read_list_node", {});
+
+        allNodes = response.payload
     }
 
     async function readNodesByCategory() {
-        allNodes = await invoke("cmd_read_nodes_by_node_category", {
+        let response = await invoke("cmd_read_nodes_by_node_category", {
             nodeCategory: currentlySelectedCategoryValue,
         });
+
+        allNodes = response.payload
     }
 
     onMount(async () => {

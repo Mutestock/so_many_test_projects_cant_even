@@ -9,7 +9,8 @@
     let allCategories = [];
 
     async function readAllNodeCategories() {
-        allCategories = await invoke("cmd_read_list_node_category",{})
+        let response = await invoke("cmd_read_list_node_category",{})
+        allCategories = response.payload
     }
 
     onMount(async () => {
