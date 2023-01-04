@@ -2,7 +2,10 @@ use chrono::NaiveDateTime;
 use rusqlite::params;
 use serde::{Deserialize, Serialize};
 
-use crate::{misc::time_management::NaiveDateTimeExtension, model::model_common::ModelCommon};
+use crate::{
+    commands::command_utils::CommandMessageComposable,
+    misc::time_management::NaiveDateTimeExtension, model::model_common::ModelCommon,
+};
 
 #[derive(Serialize, Deserialize)]
 pub struct Node {
@@ -90,7 +93,7 @@ impl ModelCommon<&str> for Node {
         Ok(())
     }
 
-    fn create(&self, connection: &rusqlite::Connection) -> Result<(), rusqlite::Error> {
+    fn create(&self, connection: &rusqlite::Connection) -> Result<usize, rusqlite::Error> {
         connection.execute(
             concat!(
                 "INSERT INTO Node (name, date_added, date_modified, category_name)",
@@ -102,8 +105,7 @@ impl ModelCommon<&str> for Node {
                 self.date_modified.to_format(),
                 &self.node_category,
             ),
-        )?;
-        Ok(())
+        )
     }
 
     fn read(t: &str, connection: &rusqlite::Connection) -> Result<Option<Node>, rusqlite::Error> {
@@ -136,7 +138,7 @@ impl ModelCommon<&str> for Node {
             .collect()
     }
 
-    fn update(&self, t: &str, connection: &rusqlite::Connection) -> Result<(), rusqlite::Error> {
+    fn update(&self, t: &str, connection: &rusqlite::Connection) -> Result<usize, rusqlite::Error> {
         connection
             .prepare(
                 "
@@ -155,15 +157,13 @@ impl ModelCommon<&str> for Node {
                 &self.primary_image_path,
                 &self.node_category,
                 t,
-            ))?;
-        Ok(())
+            ))
     }
 
-    fn delete(t: &str, connection: &rusqlite::Connection) -> Result<(), rusqlite::Error> {
+    fn delete(t: &str, connection: &rusqlite::Connection) -> Result<usize, rusqlite::Error> {
         connection
             .prepare("DELETE FROM node WHERE name = ?1")?
-            .execute((t,))?;
-        Ok(())
+            .execute((t,))
     }
 
     fn from_row(p_key: Option<&str>, row: &rusqlite::Row) -> Result<Node, rusqlite::Error> {
@@ -186,3 +186,7 @@ impl ModelCommon<&str> for Node {
         }
     }
 }
+
+impl CommandMessageComposable<Node> for Node {}
+impl CommandMessageComposable<Option<Node>> for Option<Node> {}
+impl CommandMessageComposable<Vec<Node>> for Vec<Node> {}

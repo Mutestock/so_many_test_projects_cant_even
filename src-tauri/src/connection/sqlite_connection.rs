@@ -33,3 +33,7 @@ impl Default for SqliteConnector {
         }
     }
 }
+
+pub fn get_sqlite_handle() -> Connection {
+    SqliteConnector::default().connect().unwrap()
+}

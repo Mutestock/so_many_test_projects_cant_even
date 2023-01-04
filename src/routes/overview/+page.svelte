@@ -8,6 +8,7 @@
 
     let allNodes = [];
     let currentlySelectedCategoryValue;
+    
     $: {
         if (
             currentlySelectedCategoryValue != null &&

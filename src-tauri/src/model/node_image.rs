@@ -4,7 +4,10 @@ use chrono::NaiveDateTime;
 use rusqlite::params;
 use serde::{Deserialize, Serialize};
 
-use crate::misc::{directories::BASE_IMAGE_PATH, time_management::NaiveDateTimeExtension};
+use crate::{
+    commands::command_utils::CommandMessageComposable,
+    misc::{directories::BASE_IMAGE_PATH, time_management::NaiveDateTimeExtension},
+};
 
 use super::model_common::ModelCommon;
 
@@ -72,7 +75,7 @@ impl ModelCommon<&str> for NodeImage {
         Ok(())
     }
 
-    fn create(&self, connection: &rusqlite::Connection) -> Result<(), rusqlite::Error> {
+    fn create(&self, connection: &rusqlite::Connection) -> Result<usize, rusqlite::Error> {
         connection
             .prepare(
                 "
@@ -85,11 +88,13 @@ impl ModelCommon<&str> for NodeImage {
                 self.date_added.to_format(),
                 self.date_modified.to_format(),
                 &self.node_name
-            ])?;
-        Ok(())
+            ])
     }
 
-    fn read(t: &str, connection: &rusqlite::Connection) -> Result<Option<NodeImage>, rusqlite::Error>
+    fn read(
+        t: &str,
+        connection: &rusqlite::Connection,
+    ) -> Result<Option<NodeImage>, rusqlite::Error>
     where
         Self: Sized,
     {
@@ -109,8 +114,7 @@ impl ModelCommon<&str> for NodeImage {
 
         if node_images.len() == 0 {
             Ok(None)
-        }
-        else {
+        } else {
             Ok(node_images.swap_remove(0))
         }
     }
@@ -130,7 +134,7 @@ impl ModelCommon<&str> for NodeImage {
             .collect()
     }
 
-    fn update(&self, t: &str, connection: &rusqlite::Connection) -> Result<(), rusqlite::Error> {
+    fn update(&self, t: &str, connection: &rusqlite::Connection) -> Result<usize, rusqlite::Error> {
         connection
             .prepare(
                 "
@@ -151,19 +155,17 @@ impl ModelCommon<&str> for NodeImage {
                 NaiveDateTime::now().to_format(),
                 &self.node_name,
                 t
-            ])?;
-        Ok(())
+            ])
     }
 
-    fn delete(t: &str, connection: &rusqlite::Connection) -> Result<(), rusqlite::Error> {
+    fn delete(t: &str, connection: &rusqlite::Connection) -> Result<usize, rusqlite::Error> {
         connection
             .prepare(
                 "
             DELETE FROM NodeImage 
             WHERE image_title = ?1;",
             )?
-            .execute(params![t])?;
-        Ok(())
+            .execute(params![t])
     }
 
     fn from_row(p_key: Option<&str>, row: &rusqlite::Row) -> Result<Self, rusqlite::Error>
@@ -194,3 +196,7 @@ impl ModelCommon<&str> for NodeImage {
         }
     }
 }
+
+impl CommandMessageComposable<NodeImage> for NodeImage {}
+impl CommandMessageComposable<Option<NodeImage>> for Option<NodeImage> {}
+impl CommandMessageComposable<Vec<NodeImage>> for Vec<NodeImage> {}

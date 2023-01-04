@@ -3,6 +3,8 @@ use std::fmt::Display;
 use rusqlite::params;
 use serde::{Deserialize, Serialize};
 
+use crate::commands::command_utils::CommandMessageComposable;
+
 use super::{model_common::ModelCommon, node::Node};
 
 #[derive(Serialize, Deserialize, PartialEq)]
@@ -58,15 +60,17 @@ impl ModelCommon<&str> for NodeCategory {
         Ok(())
     }
 
-    fn create(&self, connection: &rusqlite::Connection) -> Result<(), rusqlite::Error> {
+    fn create(&self, connection: &rusqlite::Connection) -> Result<usize, rusqlite::Error> {
         connection.execute(
             "INSERT INTO NodeCategory(category_name) VALUES (?1);",
             (&self.name,),
-        )?;
-        Ok(())
+        )
     }
 
-    fn read(t: &str, connection: &rusqlite::Connection) -> Result<Option<NodeCategory>, rusqlite::Error> {
+    fn read(
+        t: &str,
+        connection: &rusqlite::Connection,
+    ) -> Result<Option<NodeCategory>, rusqlite::Error> {
         // This is utterly pointless right now
         let mut node_categories = connection
             .prepare("SELECT category_name FROM NodeCategory WHERE category_name = ?1")?
@@ -78,8 +82,7 @@ impl ModelCommon<&str> for NodeCategory {
 
         if node_categories.len() == 0 {
             Ok(None)
-        }
-        else {
+        } else {
             Ok(node_categories.swap_remove(0))
         }
     }
@@ -94,18 +97,16 @@ impl ModelCommon<&str> for NodeCategory {
             .collect()
     }
 
-    fn update(&self, t: &str, connection: &rusqlite::Connection) -> Result<(), rusqlite::Error> {
+    fn update(&self, t: &str, connection: &rusqlite::Connection) -> Result<usize, rusqlite::Error> {
         Node::read_list(connection)?
             .iter()
             .for_each(|node| node.update_node_category(t, connection).unwrap());
         connection
             .prepare("UPDATE NodeCategory SET category_name = ?1 WHERE category_name = ?2")?
-            .execute(params![self.name, t])?;
-
-        Ok(())
+            .execute(params![self.name, t])
     }
 
-    fn delete(t: &str, connection: &rusqlite::Connection) -> Result<(), rusqlite::Error> {
+    fn delete(t: &str, connection: &rusqlite::Connection) -> Result<usize, rusqlite::Error> {
         Node::read_list(connection)?
             .iter()
             .for_each(|node| node.update_node_category("none", connection).unwrap());
@@ -115,9 +116,7 @@ impl ModelCommon<&str> for NodeCategory {
             DELETE FROM NodeCategory WHERE category_name = ?1;
             ",
             )?
-            .execute(params![t])?;
-
-        Ok(())
+            .execute(params![t])
     }
 
     fn from_row(p_key: Option<&str>, row: &rusqlite::Row) -> Result<Self, rusqlite::Error>
@@ -132,3 +131,7 @@ impl ModelCommon<&str> for NodeCategory {
         }
     }
 }
+
+impl CommandMessageComposable<NodeCategory> for NodeCategory {}
+impl CommandMessageComposable<Option<NodeCategory>> for Option<NodeCategory> {}
+impl CommandMessageComposable<Vec<NodeCategory>> for Vec<NodeCategory> {}

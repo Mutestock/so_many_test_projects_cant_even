@@ -1,4 +1,7 @@
-use crate::misc::time_management::NaiveDateTimeExtension;
+use crate::{
+    commands::command_utils::CommandMessageComposable,
+    misc::time_management::NaiveDateTimeExtension,
+};
 
 use super::model_common::ModelCommon;
 use chrono::NaiveDateTime;
@@ -34,18 +37,17 @@ impl NodeComment {
     pub fn delete_by_node_name(
         connection: &rusqlite::Connection,
         node_name: &str,
-    ) -> Result<(), rusqlite::Error> {
+    ) -> Result<usize, rusqlite::Error> {
         connection
             .prepare("DELETE FROM NodeComment WHERE node_name = ?1;")?
-            .execute(params![node_name])?;
-        Ok(())
+            .execute(params![node_name])
     }
 
     pub fn update_node_comment_content_by_node_name(
         connection: &rusqlite::Connection,
         old_node_name: &str,
         new_comment_content: &str,
-    ) -> Result<bool, rusqlite::Error> {
+    ) -> Result<usize, rusqlite::Error> {
         connection
             .prepare(
                 "
@@ -54,9 +56,7 @@ impl NodeComment {
                 WHERE node_name = ?2;
             ",
             )?
-            .execute(params![new_comment_content, old_node_name])?;
-
-        Ok(true)
+            .execute(params![new_comment_content, old_node_name])
     }
 
     fn read_by_identifier(
@@ -111,7 +111,7 @@ impl ModelCommon<&str> for NodeComment {
         Ok(())
     }
 
-    fn create(&self, connection: &rusqlite::Connection) -> Result<(), rusqlite::Error> {
+    fn create(&self, connection: &rusqlite::Connection) -> Result<usize, rusqlite::Error> {
         connection.execute(
             concat!(
                 "INSERT INTO NodeComment(uuid, content, date_added, date_modified, node_name)",
@@ -124,9 +124,7 @@ impl ModelCommon<&str> for NodeComment {
                 self.date_modified.to_format(),
                 &self.node_name,
             ),
-        )?;
-
-        Ok(())
+        )
     }
 
     fn read(
@@ -146,7 +144,7 @@ impl ModelCommon<&str> for NodeComment {
             .collect()
     }
 
-    fn update(&self, t: &str, connection: &rusqlite::Connection) -> Result<(), rusqlite::Error> {
+    fn update(&self, t: &str, connection: &rusqlite::Connection) -> Result<usize, rusqlite::Error> {
         connection
             .prepare(
                 "
@@ -165,20 +163,17 @@ impl ModelCommon<&str> for NodeComment {
                 self.date_added.to_format(),
                 NaiveDateTime::now().to_format(),
                 t
-            ])?;
-        Ok(())
+            ])
     }
 
-    fn delete(t: &str, connection: &rusqlite::Connection) -> Result<(), rusqlite::Error> {
+    fn delete(t: &str, connection: &rusqlite::Connection) -> Result<usize, rusqlite::Error> {
         connection
             .prepare(
                 "
                 DELETE FROM NodeComment 
                 WHERE uuid=?1",
             )?
-            .execute(params![t])?;
-
-        Ok(())
+            .execute(params![t])
     }
 
     fn from_row(p_key: Option<&str>, row: &rusqlite::Row) -> Result<Self, rusqlite::Error>
@@ -203,3 +198,7 @@ impl ModelCommon<&str> for NodeComment {
         }
     }
 }
+
+impl CommandMessageComposable<NodeComment> for NodeComment {}
+impl CommandMessageComposable<Option<NodeComment>> for Option<NodeComment> {}
+impl CommandMessageComposable<Vec<NodeComment>> for Vec<NodeComment> {}
