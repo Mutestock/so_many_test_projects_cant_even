@@ -1,6 +1,7 @@
 use crate::{
     commands::command_utils::{CommandResponseComposable, SqliteCommandResponse},
     connection::sqlite_connection::get_sqlite_handle,
+    misc::logging::{log, LogLevel},
     model::{model_common::ModelCommon, node::Node},
 };
 use tauri::InvokeError;
@@ -10,6 +11,7 @@ pub async fn cmd_create_node(
     node_category: String,
     name: String,
 ) -> Result<SqliteCommandResponse<usize>, InvokeError> {
+    log(LogLevel::Info, &format!("Node created - Name: {}", &name));
     Ok(SqliteCommandResponse::to_command_response(
         Node::new(name, node_category).create(&get_sqlite_handle()),
     ))

@@ -29,6 +29,19 @@ lazy_static::lazy_static! {
             }
         }
     };
+    pub static ref BASE_LOG_PATH: PathBuf = {
+        let context = tauri::generate_context!();
+        let path = resolve_path(
+            context.config(),
+            context.package_info(),
+            &Env::default(),
+            "log.log",
+            Some(BaseDirectory::AppData),
+        )
+        .expect("Could not resolve base image directory path");
+        println!("{:?}", &path);
+        path
+    };
 }
 
 pub fn create_directories() -> Result<(), io::Error> {
@@ -69,11 +82,11 @@ pub fn clean_temp_dirs() -> Result<(), io::Error> {
             This should never happen, and indicates that something is wrong with removing files.
             This function is not supposed to be executed outside testing."
         );
-    }   
+    }
 
     // And now we'll remove the directory.
-    
-    // Note: Causes some errors. Outcommented for now. 
+
+    // Note: Causes some errors. Outcommented for now.
     // Image testing directory placed in tests file and added to gitignore.
 
     //remove_dir(&TEMP_IMAGE_DIRECTORY.to_owned())
