@@ -6,7 +6,7 @@
 use mindmap::commands::model_commands::{
     node_category_commands::*, node_commands::*, node_comment_commands::*, node_image_commands::*,
 };
-use mindmap::commands::sqlite_commands::*;
+use mindmap::commands::{sqlite_commands::*, command_utils::* };
 use mindmap::connection::{
     connection_common::MindmapConnector, initialize, sqlite_connection::SQLITE_CONNECTOR,
 };
@@ -35,7 +35,9 @@ fn main() {
             cmd_delete_node_comment_by_node_name,
             cmd_read_list_node_comment,
             cmd_read_list_node,
-            cmd_read_nodes_by_node_category
+            cmd_ressad_list_node_comment,
+            cmd_read_nodes_by_node_category,
+            cmd_log
         ])
         .setup(|_| {
             SQLITE_CONNECTOR

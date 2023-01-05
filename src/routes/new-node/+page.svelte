@@ -20,7 +20,7 @@
                 nodeName: nodeName
             })
         }
-        writeLog(LogLevel.Info, `New node created: ${nodeName}`);
+        await writeLog(LogLevel.Info, `New node created: ${nodeName} - Type: ${nodeCategory}`);
         nodeName = "";
         nodeCategory ="";
         image_appended = false;

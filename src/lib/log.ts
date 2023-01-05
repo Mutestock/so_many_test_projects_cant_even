@@ -1,4 +1,4 @@
-import { writeTextFile, BaseDirectory, readTextFile } from "@tauri-apps/api/fs";
+import { invoke } from "@tauri-apps/api";
 
 export enum LogLevel {
     Info = "Info",
@@ -11,18 +11,9 @@ export enum LogLevel {
 
 
 
-export async function writeLog(code: LogLevel, msg: string) {
-    // There is no such thing as an append for some reason...
-    let contents = await readTextFile('log.log', { dir: BaseDirectory.AppData });
-    contents = `${contents}\nFrontend: Level: ${code} - Message: ${msg}`
-
-
-    await writeTextFile({
-        path: 'log.log',
-        contents: contents
-    },
-        {
-            dir: BaseDirectory.AppData
-        }
-    )
+export async function writeLog(level: LogLevel, msg: string) {
+    await invoke('cmd_log', {
+        level: level,
+        message: msg,
+    });
 }

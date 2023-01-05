@@ -3,7 +3,7 @@ use tauri::InvokeError;
 use crate::{
     commands::command_utils::{CommandResponseComposable, SqliteCommandResponse},
     connection::sqlite_connection::get_sqlite_handle,
-    model::{model_common::ModelCommon, node_comment::NodeComment},
+    model::{model_common::ModelCommon, node_comment::NodeComment}, misc::logging::{LogLayer, log, LogLevel},
 };
 
 #[tauri::command]
@@ -55,3 +55,13 @@ pub async fn cmd_read_list_node_comment(
         NodeComment::read_list(&get_sqlite_handle()),
     ))
 }
+
+
+#[tauri::command]
+pub async fn cmd_ressad_list_node_comment(
+) -> Result<SqliteCommandResponse<Vec<NodeComment>>, InvokeError> {
+    Ok(Vec::<NodeComment>::to_command_response(
+        NodeComment::read_list(&get_sqlite_handle()),
+    ))
+}
+
