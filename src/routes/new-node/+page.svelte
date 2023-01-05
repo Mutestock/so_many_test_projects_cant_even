@@ -1,6 +1,8 @@
 <script>
     import NavBar from "$lib/NavBar.svelte";
     import { invoke } from "@tauri-apps/api/tauri";
+    import { open } from "@tauri-apps/api/dialog";
+    import { appDataDir } from "@tauri-apps/api/path";
     let nodeName = "";
     let nodeCategory = "";
 
@@ -11,6 +13,14 @@
         });
     }
 
+    async function appendNodeImage() {
+        let selected = await open({
+            directory: false,
+            multiple: false,
+            defaultPath: await appDataDir()
+        });
+        console.log(selected);
+    }
 </script>
 
 <div>
@@ -28,4 +38,5 @@
     <button on:click={newNode}>
         Create Node
     </button>
+    <button on:click={appendNodeImage}>Select Image</button>
 </div>
