@@ -3,23 +3,43 @@
     import { invoke } from "@tauri-apps/api/tauri";
     import { open } from "@tauri-apps/api/dialog";
     import { appDataDir } from "@tauri-apps/api/path";
+    import { writeLog, LogLevel } from "$lib/log";
     let nodeName = "";
     let nodeCategory = "";
+    let image_path = "";
+    let image_appended = false;
 
     async function newNode() {
         invoke ("cmd_create_node",{
             "nodeCategory" : nodeCategory,
             "name" : nodeName
         });
+        if (image_appended) {
+            invoke ("cmd_create_node_image",{
+                imageTitle: `${nodeName}PrimaryImage`,
+                nodeName: nodeName
+            })
+        }
+        writeLog(LogLevel.Info, `New node created: ${nodeName}`);
+        nodeName = "";
+        nodeCategory ="";
+        image_appended = false;
+        image_path = "";
     }
 
     async function appendNodeImage() {
-        let selected = await open({
+        let selectedPath = await open({
             directory: false,
             multiple: false,
             defaultPath: await appDataDir()
         });
-        console.log(selected);
+        if (!selectedPath) {
+            writeLog(LogLevel.Info, "Attempted node image append was empty");
+        }
+        else {
+            image_path = selectedPath;
+            image_appended = true;
+        }
     }
 </script>
 
