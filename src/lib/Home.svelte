@@ -3,6 +3,7 @@
   import { onMount } from "svelte";
 
   let sqlitePingRes = false;
+  let oneCategory = "";
 
   async function pingSqlite() {
     sqlitePingRes = await invoke("cmd_sqlite_ping", {});

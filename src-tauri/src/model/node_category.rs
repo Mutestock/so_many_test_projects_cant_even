@@ -24,6 +24,10 @@ lazy_static::lazy_static! {
 pub struct NodeCategory {
     name: String,
     color_code_hex: String,
+    // Storing this value here persists these preferences in contrast to state.
+    // It also allows easier sorting of nodes
+    // Although there's an argument to be made for this value being managed by state instead.
+    pub visibility_toggled_on: bool,
 }
 
 impl NodeCategory {
@@ -31,6 +35,7 @@ impl NodeCategory {
         Self {
             name,
             color_code_hex,
+            visibility_toggled_on: true,
         }
     }
     pub fn name(&self) -> &str {
@@ -42,6 +47,21 @@ impl NodeCategory {
             .unwrap()
             .is_match(color_code_hex)
     }
+
+    pub fn update_category_toggle_visisbility(
+        category: &str,
+        connection: &rusqlite::Connection,
+    ) -> Result<usize, rusqlite::Error> {
+        connection
+            .prepare(
+                "
+        UPDATE NodeCategory
+        SET visibility_toggled_on = ((visibility_toggled_on | 1) - (visibility_toggled_on & 1))
+        WHERE category_name = ?1
+        ",
+            )?
+            .execute(params![category])
+    }
 }
 
 impl ModelCommon<&str> for NodeCategory {
@@ -49,7 +69,8 @@ impl ModelCommon<&str> for NodeCategory {
         connection.execute(
             "CREATE TABLE IF NOT EXISTS NodeCategory(
                 category_name TEXT NOT NULL UNIQUE PRIMARY KEY,
-                color_code_hex TEXT NOT NULL
+                color_code_hex TEXT NOT NULL,
+                visibility_toggled_on BOOLEAN DEFAULT 1
             );",
             (),
         )?;
@@ -86,9 +107,9 @@ impl ModelCommon<&str> for NodeCategory {
     ) -> Result<Option<NodeCategory>, rusqlite::Error> {
         let mut node_categories = connection
             .prepare(
-                "SELECT category_name, color_code_hex FROM NodeCategory WHERE category_name = ?1",
+                "SELECT category_name, color_code_hex, visibility_toggled_on FROM NodeCategory WHERE category_name = ?1",
             )?
-            .query_map([t], |row| NodeCategory::from_row(Some(t), row))?
+            .query_map([t], |row| NodeCategory::from_row(None, row))?
             .collect::<Vec<Result<NodeCategory, rusqlite::Error>>>()
             .into_iter()
             .map(|node_category_res| Some(node_category_res.unwrap()))
@@ -106,7 +127,9 @@ impl ModelCommon<&str> for NodeCategory {
         Self: Sized,
     {
         connection
-            .prepare("SELECT category_name, color_code_hex FROM NodeCategory")?
+            .prepare(
+                "SELECT category_name, color_code_hex, visibility_toggled_on FROM NodeCategory",
+            )?
             .query_map([], |row| NodeCategory::from_row(None, row))?
             .collect()
     }
@@ -124,13 +147,19 @@ impl ModelCommon<&str> for NodeCategory {
                 "
                 UPDATE NodeCategory 
                 SET category_name = ?1, 
-                    color_code_hex = ?2
+                    color_code_hex = ?2,
+                    visibility_toggled_on = ?3
                 
-                WHERE category_name = ?3
+                WHERE category_name = ?4
 
                 ",
             )?
-            .execute(params![self.name, self.color_code_hex, t])
+            .execute(params![
+                self.name,
+                self.color_code_hex,
+                self.visibility_toggled_on,
+                t
+            ])
     }
 
     fn delete(t: &str, connection: &rusqlite::Connection) -> Result<usize, rusqlite::Error> {
@@ -154,10 +183,12 @@ impl ModelCommon<&str> for NodeCategory {
             Some(val) => Ok(NodeCategory {
                 name: val.to_owned(),
                 color_code_hex: row.get(0)?,
+                visibility_toggled_on: row.get(1)?,
             }),
             None => Ok(NodeCategory {
                 name: row.get(0)?,
                 color_code_hex: row.get(1)?,
+                visibility_toggled_on: row.get(2)?,
             }),
         }
     }

@@ -1,20 +1,15 @@
 <script>
     import { onMount } from "svelte";
-    import { invoke } from "@tauri-apps/api/tauri";
-    import { currentlySelectedCategory } from "./stores/overviewStore";
+    import { currentlySelectedCategory } from "$lib/stores/overviewStore";
+    import { readAllNodeCategories } from "$lib/invocations/nodeCategoryInvocations";
 
     let selectedCategory;
     $: currentlySelectedCategory.set(selectedCategory);
 
     let allCategories = [];
 
-    async function readAllNodeCategories() {
-        let response = await invoke("cmd_read_list_node_category",{})
-        allCategories = response.payload
-    }
-
     onMount(async () => {
-        await readAllNodeCategories();
+        allCategories = await readAllNodeCategories(allCategories);
     });
 </script>
 

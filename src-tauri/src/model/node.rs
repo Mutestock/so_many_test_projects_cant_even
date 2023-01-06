@@ -75,6 +75,23 @@ impl Node {
 
         Ok(())
     }
+
+    pub fn read_list_toggled_on(
+        connection: &rusqlite::Connection,
+    ) -> Result<Vec<Node>, rusqlite::Error> {
+        connection
+            .prepare(
+                "
+                SELECT Node.name, Node.date_added, Node.date_modified, Node.primary_image_path, Node.category_name 
+                FROM Node
+                INNER JOIN NodeCategory 
+                ON Node.category_name = NodeCategory.category_name
+                WHERE NodeCategory.visibility_toggled_on = 1;
+                ",
+            )?
+            .query_map([], |row| Node::from_row(None, row))?
+            .collect()
+    }
 }
 
 impl ModelCommon<&str> for Node {
