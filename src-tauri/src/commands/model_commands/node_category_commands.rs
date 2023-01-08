@@ -48,3 +48,13 @@ pub async fn cmd_read_list_node_category(
         NodeCategory::read_list(&get_sqlite_handle()),
     ))
 }
+
+
+#[tauri::command]
+pub async fn cmd_category_toggle_visibility(
+    node_category: String,
+) -> Result<SqliteCommandResponse<usize>, InvokeError> {
+    Ok(SqliteCommandResponse::to_command_response(
+        NodeCategory::delete(&node_category, &get_sqlite_handle()),
+    ))
+}

@@ -4,6 +4,7 @@
     import { currentlySelectedCategory } from "$lib/stores/overviewStore";
     import NavBar from "$lib/NavBar.svelte";
     import NodeCategoryDropdown from "$lib/NodeCategoryDropdown.svelte";
+    import NodeCategoryToggle from "$lib/NodeCategoryToggle.svelte";
     import { onDestroy } from "svelte";
 
     let allNodes = [];
@@ -52,7 +53,8 @@
 <div>
     <div>
         <p>Selected Category = {currentlySelectedCategoryValue}</p>
-        <NodeCategoryDropdown />
+        <!--<NodeCategoryDropdown />-->
+        <NodeCategoryToggle/>
     </div>
     <p>Nodes:</p>
     <table>

@@ -37,7 +37,9 @@ fn main() {
             cmd_read_list_node,
             cmd_ressad_list_node_comment,
             cmd_read_nodes_by_node_category,
-            cmd_log
+            cmd_log,
+            cmd_category_toggle_visibility,
+            cmd_read_list_toggled_on
         ])
         .setup(|_| {
             SQLITE_CONNECTOR

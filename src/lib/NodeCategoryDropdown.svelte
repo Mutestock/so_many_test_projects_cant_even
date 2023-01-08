@@ -9,7 +9,7 @@
     let allCategories = [];
 
     onMount(async () => {
-        allCategories = await readAllNodeCategories(allCategories);
+        allCategories = await readAllNodeCategories();
     });
 </script>
 
