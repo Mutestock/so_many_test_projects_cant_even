@@ -1,5 +1,5 @@
 use std::fmt::Display;
-use std::fs::OpenOptions;
+use std::fs::{write, OpenOptions};
 use std::io::Write;
 
 use super::directories::BASE_LOG_PATH;
@@ -61,6 +61,11 @@ pub fn log(log_layer: LogLayer, log_level: LogLevel, log_message: &str) {
         log_level.to_string(),
         log_message
     );
+
+    if !BASE_LOG_PATH.to_owned().exists() {
+        write(BASE_LOG_PATH.to_owned(), b"").unwrap();
+    }
+
     let mut file = OpenOptions::new()
         .write(true)
         .append(true) // This is needed to append to file
