@@ -35,7 +35,6 @@ fn main() {
             cmd_delete_node_comment_by_node_name,
             cmd_read_list_node_comment,
             cmd_read_list_node,
-            cmd_ressad_list_node_comment,
             cmd_read_nodes_by_node_category,
             cmd_log,
             cmd_category_toggle_visibility,

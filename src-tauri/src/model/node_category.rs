@@ -7,14 +7,14 @@ use crate::commands::command_utils::CommandResponseComposable;
 
 lazy_static::lazy_static! {
     pub static ref DEFAULT_CATEGORIES: [NodeCategory; 8] = [
-        NodeCategory::new("event".to_owned(), "3C92E8".to_owned()),
-        NodeCategory::new("person".to_owned(), "4A3CE8".to_owned()),
-        NodeCategory::new("document".to_owned(), "1DADA6".to_owned()),
-        NodeCategory::new("location".to_owned(), "BF5217".to_owned()),
-        NodeCategory::new("appointment".to_owned(), "C7BC77".to_owned()),
-        NodeCategory::new("bill".to_owned(), "A88D20".to_owned()),
-        NodeCategory::new("warranty".to_owned(), "A1571A".to_owned()),
-        NodeCategory::new("none".to_owned(), "74A37D".to_owned()),
+        NodeCategory::new("event".to_owned(), "#3C92E8".to_owned()),
+        NodeCategory::new("person".to_owned(), "#4A3CE8".to_owned()),
+        NodeCategory::new("document".to_owned(), "#1DADA6".to_owned()),
+        NodeCategory::new("location".to_owned(), "#BF5217".to_owned()),
+        NodeCategory::new("appointment".to_owned(), "#C7BC77".to_owned()),
+        NodeCategory::new("bill".to_owned(), "#A88D20".to_owned()),
+        NodeCategory::new("warranty".to_owned(), "#A1571A".to_owned()),
+        NodeCategory::new("none".to_owned(), "#74A37D".to_owned()),
 
     ];
 
@@ -56,8 +56,12 @@ impl NodeCategory {
             .prepare(
                 "
         UPDATE NodeCategory
-        SET visibility_toggled_on = ((visibility_toggled_on | 1) - (visibility_toggled_on & 1))
-        WHERE category_name = ?1
+        SET visibility_toggled_on = CASE
+            WHEN visibility_toggled_on = 1
+                THEN 0
+            ELSE 1
+            END
+        WHERE category_name = ?1;
         ",
             )?
             .execute(params![category])
@@ -107,7 +111,7 @@ impl ModelCommon<&str> for NodeCategory {
     ) -> Result<Option<NodeCategory>, rusqlite::Error> {
         let mut node_categories = connection
             .prepare(
-                "SELECT category_name, color_code_hex, visibility_toggled_on FROM NodeCategory WHERE category_name = ?1",
+                "SELECT category_name, color_code_hex, visibility_toggled_on FROM NodeCategory WHERE category_name = ?1;",
             )?
             .query_map([t], |row| NodeCategory::from_row(None, row))?
             .collect::<Vec<Result<NodeCategory, rusqlite::Error>>>()
@@ -128,7 +132,7 @@ impl ModelCommon<&str> for NodeCategory {
     {
         connection
             .prepare(
-                "SELECT category_name, color_code_hex, visibility_toggled_on FROM NodeCategory",
+                "SELECT category_name, color_code_hex, visibility_toggled_on FROM NodeCategory;",
             )?
             .query_map([], |row| NodeCategory::from_row(None, row))?
             .collect()
@@ -151,7 +155,6 @@ impl ModelCommon<&str> for NodeCategory {
                     visibility_toggled_on = ?3
                 
                 WHERE category_name = ?4
-
                 ",
             )?
             .execute(params![

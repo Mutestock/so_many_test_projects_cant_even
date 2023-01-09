@@ -49,12 +49,12 @@
 </script>
 
 <NavBar />
-
+<NodeCategoryToggle/>
+<!--
 <div>
     <div>
         <p>Selected Category = {currentlySelectedCategoryValue}</p>
-        <!--<NodeCategoryDropdown />-->
-        <NodeCategoryToggle/>
+        <NodeCategoryDropdown />
     </div>
     <p>Nodes:</p>
     <table>
@@ -75,3 +75,4 @@
         {/each}
     </table>
 </div>
+-->

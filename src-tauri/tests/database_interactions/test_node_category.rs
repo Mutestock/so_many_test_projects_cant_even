@@ -110,7 +110,7 @@ fn test_category_toggle_visibility() -> Result<(), rusqlite::Error> {
     NodeCategory::update_category_toggle_visisbility("event", &conn)?;
     let category = NodeCategory::read("event", &conn)?.unwrap();
     assert_eq!(category.visibility_toggled_on, false);
-
+    
     NodeCategory::update_category_toggle_visisbility("event", &conn)?;
     let category = NodeCategory::read("event", &conn)?.unwrap();
     assert_eq!(category.visibility_toggled_on, true);

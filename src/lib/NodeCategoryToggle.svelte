@@ -1,36 +1,50 @@
 <script>
     import { onMount } from "svelte";
-    import { readAllNodeCategories, toggleNodeCategory } from "./invocations/nodeCategoryInvocations";
+    import {
+        readAllNodeCategories,
+        toggleNodeCategory,
+    } from "./invocations/nodeCategoryInvocations";
     import { readAllNodesWithToggledOnCategories } from "./invocations/nodeInvocations";
     import { cloneDeep } from "lodash";
 
     let allNodesWithCategoriesTurnedOn = [];
     let allCategories = [];
-    let allCategoriesBuffer = []
+    let allCategoriesBuffer = [];
 
     $: {
         //console.log(allCategoriesBuffer);
         allCategories.forEach((category, index) => {
-            console.log(category.name, " Category and buffered are the same = ", allCategoriesBuffer[index].visibility_toggled_on == category.visibility_toggled_on);
-            if (allCategoriesBuffer[index].visibility_toggled_on != category.visibility_toggled_on){
-                toggleNodeCategory(category.name).then(x=>x)
+            console.log(
+                category.name,
+                " Category and buffered are the same = ",
+                allCategoriesBuffer[index].visibility_toggled_on ==
+                    category.visibility_toggled_on
+            );
+            if (
+                allCategoriesBuffer[index].visibility_toggled_on !=
+                category.visibility_toggled_on
+            ) {
+                toggleNodeCategory(category.name);
                 console.log(category.name + " updated");
-                allCategoriesBuffer[index].visibility_toggled_on = category.visibility_toggled_on;
+                allCategoriesBuffer[index].visibility_toggled_on =
+                    category.visibility_toggled_on;
             }
         });
-        refreshNodes()
-        console.log("Activation")
+        refreshNodes();
+        console.log("Activation");
     }
 
     async function refreshNodes() {
-        allNodesWithCategoriesTurnedOn = await readAllNodesWithToggledOnCategories();
+        //console.log("Refreshed");
+        allNodesWithCategoriesTurnedOn =
+            await readAllNodesWithToggledOnCategories();
     }
 
     onMount(async () => {
         allCategories = await readAllNodeCategories();
         allCategoriesBuffer = cloneDeep(allCategories);
-        allNodesWithCategoriesTurnedOn = await readAllNodesWithToggledOnCategories();
-        
+        allNodesWithCategoriesTurnedOn =
+            await readAllNodesWithToggledOnCategories();
     });
 </script>
 
