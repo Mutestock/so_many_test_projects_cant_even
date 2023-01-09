@@ -10,7 +10,7 @@
   }
 
   async function sqliteGetCategories() {
-    let response = await invoke("cmd_read_list_node_category", {})
+    let response = await invoke("cmd_read_list_category", {})
     oneCategory = JSON.stringify(response.payload);
   }
 

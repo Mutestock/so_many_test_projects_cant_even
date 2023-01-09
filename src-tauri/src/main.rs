@@ -4,7 +4,7 @@
 )]
 
 use mindmap::commands::model_commands::{
-    node_category_commands::*, node_commands::*, node_comment_commands::*, node_image_commands::*,
+    category_commands::*, node_commands::*, node_comment_commands::*, node_image_commands::*,
 };
 use mindmap::commands::{sqlite_commands::*, command_utils::* };
 use mindmap::connection::{
@@ -25,17 +25,17 @@ fn main() {
             cmd_read_node_image,
             cmd_delete_node_image,
             cmd_read_list_node_image,
-            cmd_create_node_category,
-            cmd_read_node_category,
-            cmd_delete_node_category,
-            cmd_read_list_node_category,
+            cmd_create_category,
+            cmd_read_category,
+            cmd_delete_category,
+            cmd_read_list_category,
             cmd_create_node_comment,
             cmd_read_node_comment_by_node_name,
             cmd_update_node_comment_content_by_node_name,
             cmd_delete_node_comment_by_node_name,
             cmd_read_list_node_comment,
             cmd_read_list_node,
-            cmd_read_nodes_by_node_category,
+            cmd_read_nodes_by_category,
             cmd_log,
             cmd_category_toggle_visibility,
             cmd_read_list_toggled_on

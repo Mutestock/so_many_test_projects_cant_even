@@ -5,13 +5,13 @@
     import { appDataDir } from "@tauri-apps/api/path";
     import { writeLog, LogLevel } from "$lib/log";
     let nodeName = "";
-    let nodeCategory = "";
+    let Category = "";
     let image_path = "";
     let image_appended = false;
 
     async function newNode() {
         invoke ("cmd_create_node",{
-            "nodeCategory" : nodeCategory,
+            "Category" : Category,
             "name" : nodeName
         });
         if (image_appended) {
@@ -20,9 +20,9 @@
                 nodeName: nodeName
             })
         }
-        await writeLog(LogLevel.Info, `New node created: ${nodeName} - Type: ${nodeCategory}`);
+        await writeLog(LogLevel.Info, `New node created: ${nodeName} - Type: ${Category}`);
         nodeName = "";
-        nodeCategory ="";
+        Category ="";
         image_appended = false;
         image_path = "";
     }
@@ -53,7 +53,7 @@
 
     <div class="row">
         <p>Node Category</p>
-        <input bind:value={nodeCategory} />
+        <input bind:value={Category} />
     </div>
     <button on:click={newNode}>
         Create Node

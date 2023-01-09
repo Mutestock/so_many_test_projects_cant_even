@@ -6,22 +6,22 @@ use super::{model_common::ModelCommon, node::Node};
 use crate::commands::command_utils::CommandResponseComposable;
 
 lazy_static::lazy_static! {
-    pub static ref DEFAULT_CATEGORIES: [NodeCategory; 8] = [
-        NodeCategory::new("event".to_owned(), "#3C92E8".to_owned()),
-        NodeCategory::new("person".to_owned(), "#4A3CE8".to_owned()),
-        NodeCategory::new("document".to_owned(), "#1DADA6".to_owned()),
-        NodeCategory::new("location".to_owned(), "#BF5217".to_owned()),
-        NodeCategory::new("appointment".to_owned(), "#C7BC77".to_owned()),
-        NodeCategory::new("bill".to_owned(), "#A88D20".to_owned()),
-        NodeCategory::new("warranty".to_owned(), "#A1571A".to_owned()),
-        NodeCategory::new("none".to_owned(), "#74A37D".to_owned()),
+    pub static ref DEFAULT_CATEGORIES: [Category; 8] = [
+        Category::new("event".to_owned(), "#3C92E8".to_owned()),
+        Category::new("person".to_owned(), "#4A3CE8".to_owned()),
+        Category::new("document".to_owned(), "#1DADA6".to_owned()),
+        Category::new("location".to_owned(), "#BF5217".to_owned()),
+        Category::new("appointment".to_owned(), "#C7BC77".to_owned()),
+        Category::new("bill".to_owned(), "#A88D20".to_owned()),
+        Category::new("warranty".to_owned(), "#A1571A".to_owned()),
+        Category::new("none".to_owned(), "#74A37D".to_owned()),
 
     ];
 
 }
 
 #[derive(Serialize, Deserialize, Clone)]
-pub struct NodeCategory {
+pub struct Category {
     name: String,
     color_code_hex: String,
     // Storing this value here persists these preferences in contrast to state.
@@ -30,7 +30,7 @@ pub struct NodeCategory {
     pub visibility_toggled_on: bool,
 }
 
-impl NodeCategory {
+impl Category {
     pub fn new(name: String, color_code_hex: String) -> Self {
         Self {
             name,
@@ -55,7 +55,7 @@ impl NodeCategory {
         connection
             .prepare(
                 "
-        UPDATE NodeCategory
+        UPDATE Category
         SET visibility_toggled_on = CASE
             WHEN visibility_toggled_on = 1
                 THEN 0
@@ -68,10 +68,10 @@ impl NodeCategory {
     }
 }
 
-impl ModelCommon<&str> for NodeCategory {
+impl ModelCommon<&str> for Category {
     fn init_script(connection: &rusqlite::Connection) -> Result<(), rusqlite::Error> {
         connection.execute(
-            "CREATE TABLE IF NOT EXISTS NodeCategory(
+            "CREATE TABLE IF NOT EXISTS Category(
                 category_name TEXT NOT NULL UNIQUE PRIMARY KEY,
                 color_code_hex TEXT NOT NULL,
                 visibility_toggled_on BOOLEAN DEFAULT 1
@@ -79,7 +79,7 @@ impl ModelCommon<&str> for NodeCategory {
             (),
         )?;
         let mut query = String::from(
-            "INSERT OR IGNORE INTO NodeCategory (category_name, color_code_hex) VALUES",
+            "INSERT OR IGNORE INTO Category (category_name, color_code_hex) VALUES",
         );
 
         DEFAULT_CATEGORIES.iter().for_each(|x| {
@@ -95,12 +95,12 @@ impl ModelCommon<&str> for NodeCategory {
     }
 
     fn create(&self, connection: &rusqlite::Connection) -> Result<usize, rusqlite::Error> {
-        if !NodeCategory::is_valid_hex(&self.color_code_hex) {
+        if !Category::is_valid_hex(&self.color_code_hex) {
             return Ok(0);
         }
 
         connection.execute(
-            "INSERT INTO NodeCategory(category_name, color_code_hex) VALUES (?1, ?2);",
+            "INSERT INTO Category(category_name, color_code_hex) VALUES (?1, ?2);",
             (&self.name, &self.color_code_hex),
         )
     }
@@ -108,16 +108,16 @@ impl ModelCommon<&str> for NodeCategory {
     fn read(
         t: &str,
         connection: &rusqlite::Connection,
-    ) -> Result<Option<NodeCategory>, rusqlite::Error> {
+    ) -> Result<Option<Category>, rusqlite::Error> {
         let mut node_categories = connection
             .prepare(
-                "SELECT category_name, color_code_hex, visibility_toggled_on FROM NodeCategory WHERE category_name = ?1;",
+                "SELECT category_name, color_code_hex, visibility_toggled_on FROM Category WHERE category_name = ?1;",
             )?
-            .query_map([t], |row| NodeCategory::from_row(None, row))?
-            .collect::<Vec<Result<NodeCategory, rusqlite::Error>>>()
+            .query_map([t], |row| Category::from_row(None, row))?
+            .collect::<Vec<Result<Category, rusqlite::Error>>>()
             .into_iter()
-            .map(|node_category_res| Some(node_category_res.unwrap()))
-            .collect::<Vec<Option<NodeCategory>>>();
+            .map(|category_res| Some(category_res.unwrap()))
+            .collect::<Vec<Option<Category>>>();
 
         if node_categories.len() == 0 {
             Ok(None)
@@ -126,30 +126,30 @@ impl ModelCommon<&str> for NodeCategory {
         }
     }
 
-    fn read_list(connection: &rusqlite::Connection) -> Result<Vec<NodeCategory>, rusqlite::Error>
+    fn read_list(connection: &rusqlite::Connection) -> Result<Vec<Category>, rusqlite::Error>
     where
         Self: Sized,
     {
         connection
             .prepare(
-                "SELECT category_name, color_code_hex, visibility_toggled_on FROM NodeCategory;",
+                "SELECT category_name, color_code_hex, visibility_toggled_on FROM Category;",
             )?
-            .query_map([], |row| NodeCategory::from_row(None, row))?
+            .query_map([], |row| Category::from_row(None, row))?
             .collect()
     }
 
     fn update(&self, t: &str, connection: &rusqlite::Connection) -> Result<usize, rusqlite::Error> {
-        if !NodeCategory::is_valid_hex(&self.color_code_hex) {
+        if !Category::is_valid_hex(&self.color_code_hex) {
             return Ok(0);
         }
 
         Node::read_list(connection)?
             .iter()
-            .for_each(|node| node.update_node_category(t, connection).unwrap());
+            .for_each(|node| node.update_category(t, connection).unwrap());
         connection
             .prepare(
                 "
-                UPDATE NodeCategory 
+                UPDATE Category 
                 SET category_name = ?1, 
                     color_code_hex = ?2,
                     visibility_toggled_on = ?3
@@ -168,11 +168,11 @@ impl ModelCommon<&str> for NodeCategory {
     fn delete(t: &str, connection: &rusqlite::Connection) -> Result<usize, rusqlite::Error> {
         Node::read_list(connection)?
             .iter()
-            .for_each(|node| node.update_node_category("none", connection).unwrap());
+            .for_each(|node| node.update_category("none", connection).unwrap());
         connection
             .prepare(
                 "
-            DELETE FROM NodeCategory WHERE category_name = ?1;
+            DELETE FROM Category WHERE category_name = ?1;
             ",
             )?
             .execute(params![t])
@@ -183,12 +183,12 @@ impl ModelCommon<&str> for NodeCategory {
         Self: Sized,
     {
         match p_key {
-            Some(val) => Ok(NodeCategory {
+            Some(val) => Ok(Category {
                 name: val.to_owned(),
                 color_code_hex: row.get(0)?,
                 visibility_toggled_on: row.get(1)?,
             }),
-            None => Ok(NodeCategory {
+            None => Ok(Category {
                 name: row.get(0)?,
                 color_code_hex: row.get(1)?,
                 visibility_toggled_on: row.get(2)?,
@@ -197,6 +197,6 @@ impl ModelCommon<&str> for NodeCategory {
     }
 }
 
-impl CommandResponseComposable<NodeCategory> for NodeCategory {}
-impl CommandResponseComposable<Option<NodeCategory>> for Option<NodeCategory> {}
-impl CommandResponseComposable<Vec<NodeCategory>> for Vec<NodeCategory> {}
+impl CommandResponseComposable<Category> for Category {}
+impl CommandResponseComposable<Option<Category>> for Option<Category> {}
+impl CommandResponseComposable<Vec<Category>> for Vec<Category> {}

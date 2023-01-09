@@ -13,32 +13,32 @@ pub struct Node {
     date_added: NaiveDateTime,
     date_modified: NaiveDateTime,
     primary_image_path: Option<String>,
-    node_category: String,
+    category: String,
 }
 
 impl Node {
-    pub fn new(name: String, node_category: String) -> Self {
+    pub fn new(name: String, category: String) -> Self {
         Self {
             name,
             date_added: NaiveDateTime::now(),
             date_modified: NaiveDateTime::now(),
             primary_image_path: None,
-            node_category,
+            category,
         }
     }
 
     pub fn as_json(&self) -> Result<String, serde_json::Error> {
         serde_json::to_string(&self)
     }
-    pub fn node_category(&self) -> &str {
-        &self.node_category
+    pub fn category(&self) -> &str {
+        &self.category
     }
 
-    pub fn read_nodes_by_node_category(
+    pub fn read_nodes_by_category(
         connection: &rusqlite::Connection,
-        node_category: &str,
+        category: &str,
     ) -> Result<Vec<Node>, rusqlite::Error> {
-        Self::read_nodes_by_identifier(connection, "category_name", node_category)
+        Self::read_nodes_by_identifier(connection, "category_name", category)
     }
 
     fn read_nodes_by_identifier(
@@ -58,7 +58,7 @@ impl Node {
             .collect()
     }
 
-    pub fn update_node_category(
+    pub fn update_category(
         &self,
         new_category: &str,
         connection: &rusqlite::Connection,
@@ -84,9 +84,9 @@ impl Node {
                 "
                 SELECT Node.name, Node.date_added, Node.date_modified, Node.primary_image_path, Node.category_name 
                 FROM Node
-                INNER JOIN NodeCategory 
-                ON Node.category_name = NodeCategory.category_name
-                WHERE NodeCategory.visibility_toggled_on = 1;
+                INNER JOIN Category 
+                ON Node.category_name = Category.category_name
+                WHERE Category.visibility_toggled_on = 1;
                 ",
             )?
             .query_map([], |row| Node::from_row(None, row))?
@@ -103,7 +103,7 @@ impl ModelCommon<&str> for Node {
             date_modified TEXT NOT NULL,
             primary_image_path TEXT UNIQUE,
             category_name TEXT NOT NULL,
-            FOREIGN KEY(category_name) REFERENCES NodeCategory(category_name)
+            FOREIGN KEY(category_name) REFERENCES Category(category_name)
         )";
 
         connection.execute(query, ())?;
@@ -120,7 +120,7 @@ impl ModelCommon<&str> for Node {
                 &self.name,
                 self.date_added.to_format(),
                 self.date_modified.to_format(),
-                &self.node_category,
+                &self.category,
             ),
         )
     }
@@ -172,7 +172,7 @@ impl ModelCommon<&str> for Node {
                 self.date_added.to_format(),
                 NaiveDateTime::now().to_format(),
                 &self.primary_image_path,
-                &self.node_category,
+                &self.category,
                 t,
             ))
     }
@@ -191,14 +191,14 @@ impl ModelCommon<&str> for Node {
                 date_added: NaiveDateTime::from_row(row, 0),
                 date_modified: NaiveDateTime::from_row(row, 1),
                 primary_image_path: p_img_path,
-                node_category: row.get(3)?,
+                category: row.get(3)?,
             }),
             None => Ok(Node {
                 name: row.get(0)?,
                 date_added: NaiveDateTime::from_row(row, 1),
                 date_modified: NaiveDateTime::from_row(row, 2),
                 primary_image_path: p_img_path,
-                node_category: row.get(4)?,
+                category: row.get(4)?,
             }),
         }
     }

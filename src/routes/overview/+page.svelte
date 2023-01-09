@@ -1,7 +1,7 @@
 <script>
     import { allNodesWithCategoriesTurnedOn } from "$lib/stores/overviewStore";
     import NavBar from "$lib/NavBar.svelte";
-    import NodeCategoryToggle from "$lib/NodeCategoryToggle.svelte";
+    import CategoryToggle from "$lib/CategoryToggle.svelte";
     import { onDestroy } from "svelte";
 
 
@@ -17,7 +17,7 @@
 </script>
 
 <NavBar />
-<NodeCategoryToggle/>
+<CategoryToggle/>
 
 <div>
     <p>Nodes:</p>
@@ -28,13 +28,13 @@
             <th>Date Modified</th>
             <th>Node Category</th>
         </tr>
-        {#each _allNodesWithCategoriesTurnedOn as { name, date_added, date_modified, primary_image_path, node_category }}
+        {#each _allNodesWithCategoriesTurnedOn as { name, date_added, date_modified, primary_image_path, category }}
             <tr>
                 <td>{name}</td>
                 <td>{date_added}</td>
                 <td>{date_modified}</td>
                 <td>{primary_image_path}</td>
-                <td>{node_category}</td>
+                <td>{category}</td>
             </tr>
         {/each}
     </table>

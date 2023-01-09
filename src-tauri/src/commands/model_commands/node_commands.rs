@@ -8,7 +8,7 @@ use tauri::InvokeError;
 
 #[tauri::command]
 pub async fn cmd_create_node(
-    node_category: String,
+    category: String,
     name: String,
 ) -> Result<SqliteCommandResponse<usize>, InvokeError> {
     log(
@@ -17,7 +17,7 @@ pub async fn cmd_create_node(
         &format!("Node created - Name: {}", &name),
     );
     Ok(SqliteCommandResponse::to_command_response(
-        Node::new(name, node_category).create(&get_sqlite_handle()),
+        Node::new(name, category).create(&get_sqlite_handle()),
     ))
 }
 
@@ -49,11 +49,11 @@ pub async fn cmd_read_list_node() -> Result<SqliteCommandResponse<Vec<Node>>, In
 }
 
 #[tauri::command]
-pub async fn cmd_read_nodes_by_node_category(
-    node_category: String,
+pub async fn cmd_read_nodes_by_category(
+    category: String,
 ) -> Result<SqliteCommandResponse<Vec<Node>>, InvokeError> {
     Ok(Vec::<Node>::to_command_response(
-        Node::read_nodes_by_node_category(&get_sqlite_handle(), &node_category),
+        Node::read_nodes_by_category(&get_sqlite_handle(), &category),
     ))
 }
 
