@@ -2,7 +2,8 @@ pub mod connection_common;
 pub mod sqlite_connection;
 
 use crate::model::{
-    model_common::ModelCommon, node::Node, category::Category, comment::Comment, image::Image, tag::Tag,
+    category::Category, comment::Comment, image::Image, model_common::ModelCommon, node::Node,
+    node_tag::NodeTag, tag::Tag,
 };
 
 pub fn initialize(connection: &rusqlite::Connection) -> Result<(), rusqlite::Error> {
@@ -12,5 +13,6 @@ pub fn initialize(connection: &rusqlite::Connection) -> Result<(), rusqlite::Err
     Comment::init_script(connection)?;
     Image::init_script(connection)?;
     Tag::init_script(connection)?;
+    NodeTag::init_script(connection)?;
     Ok(())
 }
