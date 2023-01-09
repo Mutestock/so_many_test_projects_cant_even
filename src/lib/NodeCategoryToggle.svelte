@@ -6,8 +6,9 @@
     } from "./invocations/nodeCategoryInvocations";
     import { readAllNodesWithToggledOnCategories } from "./invocations/nodeInvocations";
     import { cloneDeep } from "lodash";
+    import { allNodesWithCategoriesTurnedOn } from "./stores/overviewStore";
 
-    let allNodesWithCategoriesTurnedOn = [];
+    let _allNodesWithCategoriesTurnedOn = [];
     let allCategories = [];
     let allCategoriesBuffer = [];
 
@@ -19,8 +20,7 @@
                 allCategoriesBuffer[index].visibility_toggled_on !=
                 category.visibility_toggled_on
             ) {
-                toggleNodeCategory(category.name)
-                    .then(()=>refreshNodes());
+                toggleNodeCategory(category.name).then(() => refreshNodes());
                 allCategoriesBuffer[index].visibility_toggled_on =
                     category.visibility_toggled_on;
                 return false;
@@ -29,17 +29,17 @@
         });
     }
 
+    $: allNodesWithCategoriesTurnedOn.set(_allNodesWithCategoriesTurnedOn)
 
     async function refreshNodes() {
-        allNodesWithCategoriesTurnedOn =
+        _allNodesWithCategoriesTurnedOn =
             await readAllNodesWithToggledOnCategories();
     }
 
     onMount(async () => {
         allCategories = await readAllNodeCategories();
         allCategoriesBuffer = cloneDeep(allCategories);
-        allNodesWithCategoriesTurnedOn =
-            await readAllNodesWithToggledOnCategories();
+        refreshNodes();
     });
 </script>
 
@@ -49,20 +49,3 @@
         {category.name}
     </label>
 {/each}
-<table>
-    <tr>
-        <th>Name</th>
-        <th>Date Added</th>
-        <th>Date Modified</th>
-        <th>Node Category</th>
-    </tr>
-    {#each allNodesWithCategoriesTurnedOn as { name, date_added, date_modified, primary_image_path, node_category }}
-        <tr>
-            <td>{name}</td>
-            <td>{date_added}</td>
-            <td>{date_modified}</td>
-            <td>{primary_image_path}</td>
-            <td>{node_category}</td>
-        </tr>
-    {/each}
-</table>

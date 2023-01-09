@@ -1,61 +1,25 @@
 <script>
-    import { onMount } from "svelte";
-    import { invoke } from "@tauri-apps/api/tauri";
-    import { currentlySelectedCategory } from "$lib/stores/overviewStore";
+    import { allNodesWithCategoriesTurnedOn } from "$lib/stores/overviewStore";
     import NavBar from "$lib/NavBar.svelte";
-    import NodeCategoryDropdown from "$lib/NodeCategoryDropdown.svelte";
     import NodeCategoryToggle from "$lib/NodeCategoryToggle.svelte";
     import { onDestroy } from "svelte";
 
-    let allNodes = [];
-    let currentlySelectedCategoryValue;
-    
-    $: {
-        if (
-            currentlySelectedCategoryValue != null &&
-            currentlySelectedCategoryValue != undefined &&
-            currentlySelectedCategoryValue != ""
-        ) {
-            readNodesByCategory();
-        }
-    }
 
-    const unsubscribe = currentlySelectedCategory.subscribe((value) => {
-        currentlySelectedCategoryValue = value;
-    });
+    let _allNodesWithCategoriesTurnedOn;
 
-    async function readAllNodes() {
-        let response = await invoke("cmd_read_list_node", {});
-
-        allNodes = response.payload
-    }
-
-    async function readNodesByCategory() {
-        let response = await invoke("cmd_read_nodes_by_node_category", {
-            nodeCategory: currentlySelectedCategoryValue,
-        });
-
-        allNodes = response.payload
-    }
-
-    onMount(async () => {
-        await readAllNodes();
+    const unsubscribe = allNodesWithCategoriesTurnedOn.subscribe((value) => {
+        _allNodesWithCategoriesTurnedOn = value;
     });
 
     onDestroy(async () => {
-        currentlySelectedCategory.set("");
         unsubscribe();
     });
 </script>
 
 <NavBar />
 <NodeCategoryToggle/>
-<!--
+
 <div>
-    <div>
-        <p>Selected Category = {currentlySelectedCategoryValue}</p>
-        <NodeCategoryDropdown />
-    </div>
     <p>Nodes:</p>
     <table>
         <tr>
@@ -64,7 +28,7 @@
             <th>Date Modified</th>
             <th>Node Category</th>
         </tr>
-        {#each allNodes as { name, date_added, date_modified, primary_image_path, node_category }}
+        {#each _allNodesWithCategoriesTurnedOn as { name, date_added, date_modified, primary_image_path, node_category }}
             <tr>
                 <td>{name}</td>
                 <td>{date_added}</td>
@@ -75,4 +39,3 @@
         {/each}
     </table>
 </div>
--->
