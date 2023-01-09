@@ -4,6 +4,8 @@ use serde::{Deserialize, Serialize};
 use crate::commands::command_utils::CommandResponseComposable;
 use crate::model::model_common::ModelCommon;
 
+use super::node_tag::NodeTag;
+
 #[derive(Serialize, Deserialize)]
 pub struct Tag {
     name: String,
@@ -62,9 +64,7 @@ impl ModelCommon<&str> for Tag {
     }
 
     fn delete(t: &str, connection: &rusqlite::Connection) -> Result<usize, rusqlite::Error> {
-        connection
-            .prepare("DELETE FROM NodeTag where tag_name = ?1")?
-            .execute(params![t])?;
+        NodeTag::delete_by_tag_name(t, connection)?;
         connection
             .prepare("DELETE FROM tag WHERE name = ?1")?
             .execute(params![t])

@@ -7,6 +7,8 @@ use crate::{
     misc::time_management::NaiveDateTimeExtension, model::model_common::ModelCommon,
 };
 
+use super::{node_tag::NodeTag, image::Image};
+
 #[derive(Serialize, Deserialize)]
 pub struct Node {
     name: String,
@@ -178,6 +180,8 @@ impl ModelCommon<&str> for Node {
     }
 
     fn delete(t: &str, connection: &rusqlite::Connection) -> Result<usize, rusqlite::Error> {
+        NodeTag::delete_by_node_name(t, connection)?;
+        Image::delete_by_node_name(t, connection)?;
         connection
             .prepare("DELETE FROM node WHERE name = ?1")?
             .execute((t,))

@@ -37,8 +37,8 @@ impl Image {
         &self.image_title
     }
     pub fn delete_by_node_name(
-        connection: &rusqlite::Connection,
         node_name: &str,
+        connection: &rusqlite::Connection,
     ) -> Result<(), rusqlite::Error> {
         connection
             .prepare(" DELETE FROM Image WHERE node_name = ?1;")?

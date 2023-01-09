@@ -1,3 +1,4 @@
+use rusqlite::params;
 use serde::{Deserialize, Serialize};
 
 use crate::commands::command_utils::CommandResponseComposable;
@@ -27,6 +28,24 @@ impl NodeTag {
             )?
             .execute(())?;
         Ok(())
+    }
+
+    pub fn delete_by_node_name(
+        node_name: &str,
+        connection: &rusqlite::Connection,
+    ) -> Result<usize, rusqlite::Error> {
+        connection
+            .prepare("DELETE FROM NodeTag where node_name = ?1")?
+            .execute(params![node_name])
+    }
+
+    pub fn delete_by_tag_name(
+        tag_name: &str,
+        connection: &rusqlite::Connection,
+    ) -> Result<usize, rusqlite::Error> {
+        connection
+            .prepare("DELETE FROM NodeTag where tag_name = ?1")?
+            .execute(params![tag_name])
     }
 }
 

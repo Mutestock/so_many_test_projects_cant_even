@@ -103,3 +103,9 @@ fn test_image_read_all_empty() -> Result<(), rusqlite::Error> {
 
     Ok(())
 }
+
+#[test]
+fn test_delete_by_node_name() -> Result<(), rusqlite::Error> {
+    let conn = get_testing_connection();
+    todo!();
+}
