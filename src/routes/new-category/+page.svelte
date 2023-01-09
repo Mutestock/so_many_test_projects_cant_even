@@ -1,0 +1,1 @@
+<p> New category page goes here </p>

@@ -25,12 +25,12 @@ class EventRerouter {
 const EventRerouters = {
     "new": null,
     "overview": new EventRerouter("/overview"),
-    "about": null,
-    "import": null,
-    "sync": null,
-    "backup": null,
+    "about": new EventRerouter("/about"),
+    "import": new EventRerouter("/import"),
+    "sync": new EventRerouter("/sync"),
+    "backup": new EventRerouter("/backup"),
     "new_node": new EventRerouter("/new-node"),
-    "new_category": null
+    "new_category": new EventRerouter("/new-category"),
 }
 
 
