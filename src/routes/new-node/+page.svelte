@@ -15,7 +15,7 @@
             "name" : nodeName
         });
         if (image_appended) {
-            invoke ("cmd_create_node_image",{
+            invoke ("cmd_create_image",{
                 imageTitle: `${nodeName}PrimaryImage`,
                 nodeName: nodeName
             })
@@ -27,7 +27,7 @@
         image_path = "";
     }
 
-    async function appendNodeImage() {
+    async function appendImage() {
         let selectedPath = await open({
             directory: false,
             multiple: false,
@@ -58,5 +58,5 @@
     <button on:click={newNode}>
         Create Node
     </button>
-    <button on:click={appendNodeImage}>Select Image</button>
+    <button on:click={appendImage}>Select Image</button>
 </div>

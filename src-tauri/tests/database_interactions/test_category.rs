@@ -62,8 +62,8 @@ fn test_read_list_category() -> Result<(), rusqlite::Error> {
 fn test_category_read_none() -> Result<(), rusqlite::Error> {
     let conn = get_testing_connection();
 
-    let node_comment_read = Category::read("asphyxia", &conn)?;
-    assert_eq!(node_comment_read.is_none(), true);
+    let comment_read = Category::read("asphyxia", &conn)?;
+    assert_eq!(comment_read.is_none(), true);
 
     Ok(())
 }

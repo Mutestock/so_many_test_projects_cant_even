@@ -1,4 +1,4 @@
 pub mod node_commands;
 pub mod category_commands;
-pub mod node_comment_commands;
-pub mod node_image_commands;
+pub mod comment_commands;
+pub mod image_commands;

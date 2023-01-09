@@ -12,7 +12,7 @@ use crate::{
 use super::model_common::ModelCommon;
 
 #[derive(Serialize, Deserialize)]
-pub struct NodeImage {
+pub struct Image {
     image_title: String,
     image_path: PathBuf,
     date_added: NaiveDateTime,
@@ -20,7 +20,7 @@ pub struct NodeImage {
     node_name: String,
 }
 
-impl NodeImage {
+impl Image {
     pub fn new(image_title: String, node_name: String) -> Self {
         Self {
             image_title: image_title.clone(),
@@ -41,7 +41,7 @@ impl NodeImage {
         node_name: &str,
     ) -> Result<(), rusqlite::Error> {
         connection
-            .prepare(" DELETE FROM NodeImage WHERE node_name = ?1;")?
+            .prepare(" DELETE FROM Image WHERE node_name = ?1;")?
             .execute(params![node_name])?;
         Ok(())
     }
@@ -51,18 +51,18 @@ impl NodeImage {
         new_node_name: &str,
     ) -> Result<(), rusqlite::Error> {
         connection
-            .prepare("UPDATE NodeImage SET node_name = ?1 WHERE node_name = ?2;")?
+            .prepare("UPDATE Image SET node_name = ?1 WHERE node_name = ?2;")?
             .execute(params![old_node_name, new_node_name])?;
         Ok(())
     }
 }
 
-impl ModelCommon<&str> for NodeImage {
+impl ModelCommon<&str> for Image {
     fn init_script(connection: &rusqlite::Connection) -> Result<(), rusqlite::Error> {
         connection
             .prepare(
                 "
-                CREATE TABLE IF NOT EXISTS NodeImage (
+                CREATE TABLE IF NOT EXISTS Image (
                     image_title TEXT UNIQUE PRIMARY KEY NOT NULL,
                     image_path TEXT NOT NULL,
                     date_added TEXT NOT NULL,
@@ -79,7 +79,7 @@ impl ModelCommon<&str> for NodeImage {
         connection
             .prepare(
                 "
-            INSERT INTO NodeImage (image_title, image_path, date_added, date_modified, node_name)
+            INSERT INTO Image (image_title, image_path, date_added, date_modified, node_name)
             VALUES ( ?1, ?2, ?3, ?4, ?5);",
             )?
             .execute(params![
@@ -94,32 +94,32 @@ impl ModelCommon<&str> for NodeImage {
     fn read(
         t: &str,
         connection: &rusqlite::Connection,
-    ) -> Result<Option<NodeImage>, rusqlite::Error>
+    ) -> Result<Option<Image>, rusqlite::Error>
     where
         Self: Sized,
     {
-        let mut node_images = connection
+        let mut images = connection
             .prepare(
                 "
                 SELECT image_path, date_added, date_modified, node_name
-                FROM NodeImage
+                FROM Image
                 WHERE image_title = ?1;
             ",
             )?
-            .query_map(params![t], |row| NodeImage::from_row(Some(t), row))?
-            .collect::<Vec<Result<NodeImage, rusqlite::Error>>>()
+            .query_map(params![t], |row| Image::from_row(Some(t), row))?
+            .collect::<Vec<Result<Image, rusqlite::Error>>>()
             .into_iter()
-            .map(|node_image| Some(node_image.unwrap()))
-            .collect::<Vec<Option<NodeImage>>>();
+            .map(|image| Some(image.unwrap()))
+            .collect::<Vec<Option<Image>>>();
 
-        if node_images.len() == 0 {
+        if images.len() == 0 {
             Ok(None)
         } else {
-            Ok(node_images.swap_remove(0))
+            Ok(images.swap_remove(0))
         }
     }
 
-    fn read_list(connection: &rusqlite::Connection) -> Result<Vec<NodeImage>, rusqlite::Error>
+    fn read_list(connection: &rusqlite::Connection) -> Result<Vec<Image>, rusqlite::Error>
     where
         Self: Sized,
     {
@@ -127,10 +127,10 @@ impl ModelCommon<&str> for NodeImage {
             .prepare(
                 "
             SELECT image_title, image_path, date_added, date_modified, node_name
-            FROM NodeImage
+            FROM Image
         ",
             )?
-            .query_map(params![], |row| NodeImage::from_row(None, row))?
+            .query_map(params![], |row| Image::from_row(None, row))?
             .collect()
     }
 
@@ -138,7 +138,7 @@ impl ModelCommon<&str> for NodeImage {
         connection
             .prepare(
                 "
-            UPDATE NodeImage
+            UPDATE Image
             SET image_title = ?1,
                 image_path = ?2,
                 date_added = ?3,
@@ -162,7 +162,7 @@ impl ModelCommon<&str> for NodeImage {
         connection
             .prepare(
                 "
-            DELETE FROM NodeImage 
+            DELETE FROM Image 
             WHERE image_title = ?1;",
             )?
             .execute(params![t])
@@ -173,7 +173,7 @@ impl ModelCommon<&str> for NodeImage {
         Self: Sized,
     {
         match p_key {
-            Some(val) => Ok(NodeImage {
+            Some(val) => Ok(Image {
                 image_title: val.to_owned(),
                 image_path: {
                     let img_path_as_string: String = row.get(0)?;
@@ -183,7 +183,7 @@ impl ModelCommon<&str> for NodeImage {
                 date_modified: NaiveDateTime::from_row(row, 2),
                 node_name: row.get(3)?,
             }),
-            None => Ok(NodeImage {
+            None => Ok(Image {
                 image_title: row.get(0)?,
                 image_path: {
                     let img_path_as_string: String = row.get(1)?;
@@ -197,6 +197,6 @@ impl ModelCommon<&str> for NodeImage {
     }
 }
 
-impl CommandResponseComposable<NodeImage> for NodeImage {}
-impl CommandResponseComposable<Option<NodeImage>> for Option<NodeImage> {}
-impl CommandResponseComposable<Vec<NodeImage>> for Vec<NodeImage> {}
+impl CommandResponseComposable<Image> for Image {}
+impl CommandResponseComposable<Option<Image>> for Option<Image> {}
+impl CommandResponseComposable<Vec<Image>> for Vec<Image> {}
