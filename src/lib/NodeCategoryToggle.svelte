@@ -11,31 +11,26 @@
     let allCategories = [];
     let allCategoriesBuffer = [];
 
+    // Should still consider having state handle more of these interactions.
+    // Using the database is expensive.
     $: {
-        //console.log(allCategoriesBuffer);
-        allCategories.forEach((category, index) => {
-            console.log(
-                category.name,
-                " Category and buffered are the same = ",
-                allCategoriesBuffer[index].visibility_toggled_on ==
-                    category.visibility_toggled_on
-            );
+        allCategories.every((category, index) => {
             if (
                 allCategoriesBuffer[index].visibility_toggled_on !=
                 category.visibility_toggled_on
             ) {
-                toggleNodeCategory(category.name);
-                console.log(category.name + " updated");
+                toggleNodeCategory(category.name)
+                    .then(()=>refreshNodes());
                 allCategoriesBuffer[index].visibility_toggled_on =
                     category.visibility_toggled_on;
+                return false;
             }
+            return true;
         });
-        refreshNodes();
-        console.log("Activation");
     }
 
+
     async function refreshNodes() {
-        //console.log("Refreshed");
         allNodesWithCategoriesTurnedOn =
             await readAllNodesWithToggledOnCategories();
     }
