@@ -1,10 +1,10 @@
 <script>
     import { onMount } from "svelte";
     import {
-        readAllCategories,
-        toggleCategory,
+        invokeReadAllCategories,
+        invokeToggleCategory,
     } from "./invocations/categoryInvocations";
-    import { readAllNodesWithToggledOnCategories } from "./invocations/nodeInvocations";
+    import { invokeReadAllNodesWithToggledOnCategories } from "./invocations/nodeInvocations";
     import { cloneDeep } from "lodash";
     import { allNodesWithCategoriesTurnedOn } from "./stores/overviewStore";
 
@@ -20,7 +20,7 @@
                 allCategoriesBuffer[index].visibility_toggled_on !=
                 category.visibility_toggled_on
             ) {
-                toggleCategory(category.name).then(() => refreshNodes());
+                invokeToggleCategory(category.name).then(() => refreshNodes());
                 allCategoriesBuffer[index].visibility_toggled_on =
                     category.visibility_toggled_on;
                 return false;
@@ -33,11 +33,11 @@
 
     async function refreshNodes() {
         _allNodesWithCategoriesTurnedOn =
-            await readAllNodesWithToggledOnCategories();
+            await invokeReadAllNodesWithToggledOnCategories();
     }
 
     onMount(async () => {
-        allCategories = await readAllCategories();
+        allCategories = await invokeReadAllCategories();
         allCategoriesBuffer = cloneDeep(allCategories);
         refreshNodes();
     });

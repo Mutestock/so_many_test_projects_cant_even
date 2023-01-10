@@ -14,7 +14,8 @@
   "dependencies": {
     "@tauri-apps/api": "^1.2.0",
     "@types/lodash": "^4.14.191",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "svelte-color-picker": "^1.0.7"
   },
   "devDependencies": {
     "@sveltejs/adapter-static": "next",

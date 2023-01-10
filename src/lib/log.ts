@@ -11,7 +11,7 @@ export enum LogLevel {
 
 
 
-export async function writeLog(level: LogLevel, msg: string) {
+export async function invokeWriteLog(level: LogLevel, msg: string) {
     await invoke('cmd_log', {
         level: level,
         message: msg,
