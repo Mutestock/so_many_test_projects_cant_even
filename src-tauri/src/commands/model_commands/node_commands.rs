@@ -33,10 +33,10 @@ pub async fn cmd_read_node(
 
 #[tauri::command]
 pub async fn cmd_delete_node(
-    node_name: String,
+    name: String,
 ) -> Result<SqliteCommandResponse<usize>, InvokeError> {
     Ok(SqliteCommandResponse::to_command_response(Node::delete(
-        &node_name,
+        &name,
         &get_sqlite_handle(),
     )))
 }

@@ -7,24 +7,24 @@ export class TagInvocation {
         this.name = name
     }
 
-    public async createTag(): Promise<void> {
+    public static async createTag(name: string): Promise<void> {
         await invoke("cmd_create_tag", {
-            tagName: "this.name"
+            tagName: name
         });
     }
 
-    public async deleteTag(): Promise<void> {
+    public static async deleteTag(name: string): Promise<void> {
         await invoke("cmd_delete_tag", {
-            tagName: "this.name"
+            tagName: name
         });
     }
 
-    public async readListTag(): Promise<TagInvocation[]> {
+    public static async readListTag(): Promise<TagInvocation[]> {
         let res = await invoke("cmd_read_list_tag", {}) as any[];
         return res.map(x => new TagInvocation(x.name));
     }
 
-    public async updateTag(oldTagName: string, newTagName: string): Promise<void> {
+    public static async updateTag(oldTagName: string, newTagName: string): Promise<void> {
         await invoke("cmd_update_tag", {
             oldTagName: oldTagName,
             newTagName: newTagName
