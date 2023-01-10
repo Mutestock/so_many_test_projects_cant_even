@@ -7,6 +7,8 @@
     import CategoryDropdown from "$lib/CategoryDropdown.svelte";
     import { currentlySelectedCategory } from "$lib/stores/creationStore";
     import { onDestroy } from "svelte";
+    import { copyFile, BaseDirectory } from '@tauri-apps/api/fs';
+
     let nodeName = "";
     let currentlySelectedCategoryValue;
     let image_path = "";
@@ -19,7 +21,7 @@
         });
         if (image_appended) {
             invoke("cmd_create_image", {
-                imageTitle: `${nodeName}PrimaryImage`,
+                imageTitle: `${nodeName}_primary_image`,
                 nodeName: nodeName,
             });
         }
@@ -45,7 +47,12 @@
         if (!selectedPath) {
             writeLog(LogLevel.Info, "Attempted node image append was empty");
         } else {
-            image_path = selectedPath;
+            console.log(selectedPath);
+            let appDataDirectory = await appDataDir();
+            let imagesDirectory = appDataDirectory + "images";
+            let file_extension = selectedPath.split(".").at(-1);
+            await copyFile(selectedPath, `images/${nodeName}_primary_image.${file_extension}`, {dir: BaseDirectory.AppData});
+            image_path = imagesDirectory + "/" + `${nodeName}_primary_image.${file_extension}`;
             image_appended = true;
         }
     }
@@ -63,6 +70,7 @@
         <p>Name</p>
         <input bind:value={nodeName} />
     </div>
+    <img src="images/aaaarsc_primary_image.png" alt="">
 
     <CategoryDropdown />
     <button on:click={newNode}> Create Node </button>

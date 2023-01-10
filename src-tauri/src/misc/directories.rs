@@ -31,16 +31,14 @@ lazy_static::lazy_static! {
     };
     pub static ref BASE_LOG_PATH: PathBuf = {
         let context = tauri::generate_context!();
-        let path = resolve_path(
+        resolve_path(
             context.config(),
             context.package_info(),
             &Env::default(),
             "log.log",
             Some(BaseDirectory::AppData),
         )
-        .expect("Could not resolve base image directory path");
-        println!("{:?}", &path);
-        path
+        .expect("Could not resolve base image directory path")
     };
 }
 

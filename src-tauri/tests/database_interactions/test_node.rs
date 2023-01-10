@@ -104,8 +104,6 @@ fn test_node_read_all_whose_category_is_on() -> Result<(), rusqlite::Error> {
     let full_length = Node::read_list_toggled_on(&conn)?.len();
     Category::update_category_toggle_visisbility("event", &conn)?;
     let smaller_length = Node::read_list_toggled_on(&conn)?.len();
-    println!("{}", full_length);
-    println!("{}", smaller_length);
     assert_eq!(full_length, 3);
     assert_eq!(smaller_length, 2);
 
