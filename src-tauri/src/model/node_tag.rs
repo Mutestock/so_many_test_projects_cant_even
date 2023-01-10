@@ -35,7 +35,7 @@ impl NodeTag {
         connection: &rusqlite::Connection,
     ) -> Result<usize, rusqlite::Error> {
         connection
-            .prepare("DELETE FROM NodeTag where node_name = ?1")?
+            .prepare("DELETE FROM Node_Tag where node_name = ?1")?
             .execute(params![node_name])
     }
 
@@ -44,7 +44,7 @@ impl NodeTag {
         connection: &rusqlite::Connection,
     ) -> Result<usize, rusqlite::Error> {
         connection
-            .prepare("DELETE FROM NodeTag where tag_name = ?1")?
+            .prepare("DELETE FROM Node_Tag where tag_name = ?1")?
             .execute(params![tag_name])
     }
 }

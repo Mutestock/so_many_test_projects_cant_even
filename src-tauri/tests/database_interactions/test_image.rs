@@ -91,6 +91,7 @@ fn test_image_read_none() -> Result<(), rusqlite::Error> {
     let image_read = Image::read("cake", &conn)?;
     assert_eq!(image_read.is_none(), true);
 
+    cleanup();
     Ok(())
 }
 
@@ -101,11 +102,26 @@ fn test_image_read_all_empty() -> Result<(), rusqlite::Error> {
     let images = Image::read_list(&conn)?;
     assert_eq!(images.len(), 0);
 
+    cleanup();
     Ok(())
 }
 
 #[test]
 fn test_delete_by_node_name() -> Result<(), rusqlite::Error> {
     let conn = get_testing_connection();
-    todo!();
+
+    Node::new("Bonk".to_owned(), "event".to_owned()).create(&conn)?;
+
+    Image::new("one".to_owned(), "Bonk".to_owned()).create(&conn)?;
+    Image::new("two".to_owned(), "Bonk".to_owned()).create(&conn)?;
+    Image::new("three".to_owned(), "Bonk".to_owned()).create(&conn)?;
+    let images = Image::read_list(&conn)?;
+    assert_eq!(images.len(), 3);
+    Image::delete_by_node_name("Bonk", &conn)?;
+    let images = Image::read_list(&conn)?;
+    assert_eq!(images.len(), 0);
+
+    cleanup();
+
+    Ok(())
 }

@@ -6,9 +6,17 @@ use crate::model::model_common::ModelCommon;
 
 use super::node_tag::NodeTag;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct Tag {
-    name: String,
+    pub name: String,
+}
+
+impl Tag {
+    pub fn new(name: String) -> Self {
+        Self { name }
+    }
+
+
 }
 
 impl ModelCommon<&str> for Tag {
@@ -56,7 +64,7 @@ impl ModelCommon<&str> for Tag {
 
     fn update(&self, t: &str, connection: &rusqlite::Connection) -> Result<usize, rusqlite::Error> {
         connection
-            .prepare("UPDATE NodeTag SET tag_name = ?1 WHERE tag_name = ?2")?
+            .prepare("UPDATE Node_Tag SET tag_name = ?1 WHERE tag_name = ?2")?
             .execute(params![self.name, t])?;
         connection
             .prepare("UPDATE Tag SET name = ?1 WHERE name = ?2")?
