@@ -1,7 +1,7 @@
 <script>
     import { onMount } from "svelte";
     import {
-        readAllNodeCategories,
+        readAllCategories,
         toggleCategory,
     } from "./invocations/categoryInvocations";
     import { readAllNodesWithToggledOnCategories } from "./invocations/nodeInvocations";
@@ -37,7 +37,7 @@
     }
 
     onMount(async () => {
-        allCategories = await readAllNodeCategories();
+        allCategories = await readAllCategories();
         allCategoriesBuffer = cloneDeep(allCategories);
         refreshNodes();
     });

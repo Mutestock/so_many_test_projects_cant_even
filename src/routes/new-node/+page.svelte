@@ -4,43 +4,56 @@
     import { open } from "@tauri-apps/api/dialog";
     import { appDataDir } from "@tauri-apps/api/path";
     import { writeLog, LogLevel } from "$lib/log";
+    import CategoryDropdown from "$lib/CategoryDropdown.svelte";
+    import { currentlySelectedCategory } from "$lib/stores/creationStore";
+    import { onDestroy } from "svelte";
     let nodeName = "";
-    let Category = "";
+    let currentlySelectedCategoryValue;
     let image_path = "";
     let image_appended = false;
 
     async function newNode() {
-        invoke ("cmd_create_node",{
-            "Category" : Category,
-            "name" : nodeName
+        invoke("cmd_create_node", {
+            category: currentlySelectedCategoryValue,
+            name: nodeName,
         });
         if (image_appended) {
-            invoke ("cmd_create_image",{
+            invoke("cmd_create_image", {
                 imageTitle: `${nodeName}PrimaryImage`,
-                nodeName: nodeName
-            })
+                nodeName: nodeName,
+            });
         }
-        await writeLog(LogLevel.Info, `New node created: ${nodeName} - Type: ${Category}`);
+        await writeLog(
+            LogLevel.Info,
+            `New node created: ${nodeName} - Type: ${currentlySelectedCategoryValue}`
+        );
         nodeName = "";
-        Category ="";
         image_appended = false;
         image_path = "";
     }
+
+    const unsubscribe = currentlySelectedCategory.subscribe((value) => {
+        currentlySelectedCategoryValue = value;
+    });
 
     async function appendImage() {
         let selectedPath = await open({
             directory: false,
             multiple: false,
-            defaultPath: await appDataDir()
+            defaultPath: await appDataDir(),
         });
         if (!selectedPath) {
             writeLog(LogLevel.Info, "Attempted node image append was empty");
-        }
-        else {
+        } else {
             image_path = selectedPath;
             image_appended = true;
         }
     }
+
+    onDestroy(async () => {
+        currentlySelectedCategory.set("");
+        unsubscribe();
+    });
 </script>
 
 <div>
@@ -51,12 +64,7 @@
         <input bind:value={nodeName} />
     </div>
 
-    <div class="row">
-        <p>Node Category</p>
-        <input bind:value={Category} />
-    </div>
-    <button on:click={newNode}>
-        Create Node
-    </button>
+    <CategoryDropdown />
+    <button on:click={newNode}> Create Node </button>
     <button on:click={appendImage}>Select Image</button>
 </div>
