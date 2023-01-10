@@ -58,3 +58,19 @@ fn test_delete_tag() -> Result<(), Error> {
 
     Ok(())
 }
+
+#[test]
+fn test_update_by_tag_name() -> Result<(), Error> {
+    let conn = get_testing_connection();
+    Tag::new("some_tag".to_owned()).create(&conn)?;
+
+    let tag_read1 = Tag::read_list(&conn)?.swap_remove(0);
+    assert_eq!(tag_read1.name, "some_tag");
+
+    Tag::update_by_tag_name("some_tag", "updated_tag", &conn)?;
+
+    let tag_read1 = Tag::read_list(&conn)?.swap_remove(0);
+    assert_eq!(tag_read1.name, "updated_tag");
+
+    Ok(())
+}

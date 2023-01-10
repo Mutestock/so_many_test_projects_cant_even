@@ -78,7 +78,7 @@
         <p>Name</p>
         <input bind:value={nodeName} />
     </div>
-    <img src="images/aaaarsc_primary_image.png" alt="" />
+    <img src="" alt="" />
 
     <CategoryDropdown />
     <button on:click={newNode}> Create Node </button>

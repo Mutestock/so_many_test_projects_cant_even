@@ -15,8 +15,18 @@ impl Tag {
     pub fn new(name: String) -> Self {
         Self { name }
     }
-
-
+    pub fn update_by_tag_name(
+        old_tag_name: &str,
+        new_tag_name: &str,
+        connection: &rusqlite::Connection,
+    ) -> Result<usize, rusqlite::Error> {
+        connection
+            .prepare("UPDATE Node_Tag SET tag_name = ?1 WHERE tag_name = ?2")?
+            .execute(params![new_tag_name, old_tag_name,])?;
+        connection
+            .prepare("UPDATE Tag SET name = ?1 WHERE name = ?2")?
+            .execute(params![new_tag_name, old_tag_name])
+    }
 }
 
 impl ModelCommon<&str> for Tag {

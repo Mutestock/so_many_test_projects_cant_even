@@ -4,9 +4,9 @@
 )]
 
 use mindmap::commands::model_commands::{
-    category_commands::*, node_commands::*, comment_commands::*, image_commands::*,
+    category_commands::*, comment_commands::*, image_commands::*, node_commands::*, tag_commands::*,
 };
-use mindmap::commands::{sqlite_commands::*, command_utils::* };
+use mindmap::commands::{command_utils::*, sqlite_commands::*};
 use mindmap::connection::{
     connection_common::MindmapConnector, initialize, sqlite_connection::SQLITE_CONNECTOR,
 };
@@ -38,7 +38,11 @@ fn main() {
             cmd_read_nodes_by_category,
             cmd_log,
             cmd_category_toggle_visibility,
-            cmd_read_list_toggled_on
+            cmd_read_list_toggled_on,
+            cmd_create_tag,
+            cmd_read_list_tag,
+            cmd_delete_tag,
+            cmd_update_tag
         ])
         .setup(|_| {
             SQLITE_CONNECTOR

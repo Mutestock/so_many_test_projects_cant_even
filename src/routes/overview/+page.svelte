@@ -4,7 +4,6 @@
     import CategoryToggle from "$lib/CategoryToggle.svelte";
     import { onDestroy } from "svelte";
 
-
     let _allNodesWithCategoriesTurnedOn;
 
     const unsubscribe = allNodesWithCategoriesTurnedOn.subscribe((value) => {
@@ -16,8 +15,7 @@
     });
 </script>
 
-<NavBar />
-<CategoryToggle/>
+<CategoryToggle />
 
 <div>
     <p>Nodes:</p>
@@ -39,3 +37,6 @@
         {/each}
     </table>
 </div>
+
+<style>
+</style>
