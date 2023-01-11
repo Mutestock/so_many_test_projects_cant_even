@@ -7,7 +7,6 @@
 </script>
 
 <div>
-  <NavBar />
   <div class="row">
     <Home />
   </div>

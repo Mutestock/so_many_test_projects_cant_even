@@ -52,5 +52,4 @@
     .category-input {
         color: var(--color, black);
     }
-
 </style>

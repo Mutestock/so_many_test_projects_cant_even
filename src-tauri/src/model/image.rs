@@ -91,10 +91,7 @@ impl ModelCommon<&str> for Image {
             ])
     }
 
-    fn read(
-        t: &str,
-        connection: &rusqlite::Connection,
-    ) -> Result<Option<Image>, rusqlite::Error>
+    fn read(t: &str, connection: &rusqlite::Connection) -> Result<Option<Image>, rusqlite::Error>
     where
         Self: Sized,
     {

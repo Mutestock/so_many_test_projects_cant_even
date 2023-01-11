@@ -14,9 +14,12 @@
     });
 </script>
 
-<CategoryToggle />
-
-<div>
+<div class="toggle-container-outer ">
+    <div class="toggle-container">
+        <CategoryToggle />
+    </div>
+</div>
+<div class="content-container">
     <p>Nodes:</p>
     <table>
         <tr>
@@ -37,5 +40,29 @@
     </table>
 </div>
 
-<style>
+
+
+<style lang="scss">
+    .toggle-container {
+        width: 100%;
+        align-self: stretch;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        float: left;
+    }
+
+    .toggle-container-outer {
+        width: 25%;
+        float: left;
+        display: inline;
+    }
+
+    .content-container {
+        width: 50%;
+        margin: 0 auto;
+        display: inline;
+        float: left;
+    }
 </style>

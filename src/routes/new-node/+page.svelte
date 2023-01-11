@@ -75,7 +75,6 @@
 </script>
 
 <div>
-    <NavBar />
     <p>Hello there. This is the new node tab</p>
     <div class="row">
         <p>Name</p>
@@ -87,3 +86,5 @@
     <button on:click={newNode}> Create Node </button>
     <button on:click={appendImage}>Select Image</button>
 </div>
+
+

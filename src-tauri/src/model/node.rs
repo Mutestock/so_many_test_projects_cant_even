@@ -7,7 +7,7 @@ use crate::{
     misc::time_management::NaiveDateTimeExtension, model::model_common::ModelCommon,
 };
 
-use super::{node_tag::NodeTag, image::Image};
+use super::{image::Image, node_tag::NodeTag};
 
 #[derive(Serialize, Deserialize)]
 pub struct Node {
