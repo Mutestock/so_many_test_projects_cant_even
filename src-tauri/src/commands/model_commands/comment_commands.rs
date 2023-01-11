@@ -9,10 +9,10 @@ use crate::{
 #[tauri::command]
 pub async fn cmd_create_comment(
     node_name: String,
-    comment_content: String,
+    content: String,
 ) -> Result<SqliteCommandResponse<usize>, InvokeError> {
     Ok(SqliteCommandResponse::to_command_response(
-        Comment::new(node_name, comment_content).create(&get_sqlite_handle()),
+        Comment::new(node_name, content).create(&get_sqlite_handle()),
     ))
 }
 
