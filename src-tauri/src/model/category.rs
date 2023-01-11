@@ -15,9 +15,7 @@ lazy_static::lazy_static! {
         Category::new("bill".to_owned(), "#A88D20".to_owned()),
         Category::new("warranty".to_owned(), "#A1571A".to_owned()),
         Category::new("none".to_owned(), "#74A37D".to_owned()),
-
     ];
-
 }
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -78,9 +76,8 @@ impl ModelCommon<&str> for Category {
             );",
             (),
         )?;
-        let mut query = String::from(
-            "INSERT OR IGNORE INTO Category (category_name, color_code_hex) VALUES",
-        );
+        let mut query =
+            String::from("INSERT OR IGNORE INTO Category (category_name, color_code_hex) VALUES");
 
         DEFAULT_CATEGORIES.iter().for_each(|x| {
             query = format!("{} ('{}', '{}')", query, x.name, x.color_code_hex);
@@ -131,9 +128,7 @@ impl ModelCommon<&str> for Category {
         Self: Sized,
     {
         connection
-            .prepare(
-                "SELECT category_name, color_code_hex, visibility_toggled_on FROM Category;",
-            )?
+            .prepare("SELECT category_name, color_code_hex, visibility_toggled_on FROM Category;")?
             .query_map([], |row| Category::from_row(None, row))?
             .collect()
     }

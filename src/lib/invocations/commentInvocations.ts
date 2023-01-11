@@ -33,6 +33,7 @@ export class CommentInvocation {
         let res = await invoke("cmd_read_comment_by_node_name", {
             nodeName: nodeName
         }) as any;
+        res = res.payload;
 
         return new CommentInvocation(
             res.uuid,
@@ -49,7 +50,12 @@ export class CommentInvocation {
 
     public static async readListComment(): Promise<CommentInvocation[]> {
         let res = await invoke("cmd_read_list_comment") as any[]
-        return res.map(x => new CommentInvocation(x.uuid, x.nodeName, x.content, x.dateAdded, x.dateModified))
+        return res.payload.map(x => new CommentInvocation(
+            x.uuid,
+            x.nodeName,
+            x.content,
+            x.dateAdded,
+            x.dateModified)
+        )
     }
-
 }

@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use tauri::InvokeError;
 
-use crate::misc::logging::{LogLayer, log, LogLevel};
+use crate::misc::logging::{log, LogLayer, LogLevel};
 
 #[derive(Serialize, Deserialize, Clone)]
 pub struct SqliteCommandResponse<T: Serialize> {
@@ -10,16 +10,11 @@ pub struct SqliteCommandResponse<T: Serialize> {
     pub msg: Option<String>,
 }
 
-
 #[tauri::command]
 pub async fn cmd_log(level: String, message: String) -> Result<(), InvokeError> {
     log(LogLayer::Frontend, LogLevel::from(level.as_str()), &message);
     Ok(())
 }
-
-
-
-
 
 pub trait CommandResponseComposable<T: Serialize> {
     fn to_command_response(result: Result<T, rusqlite::Error>) -> SqliteCommandResponse<T> {
@@ -36,7 +31,10 @@ pub trait CommandResponseComposable<T: Serialize> {
             },
         }
     }
-    fn to_command_response_with_message(result: Result<T, rusqlite::Error>, message: String) -> SqliteCommandResponse<T> {
+    fn to_command_response_with_message(
+        result: Result<T, rusqlite::Error>,
+        message: String,
+    ) -> SqliteCommandResponse<T> {
         match result {
             Ok(v) => SqliteCommandResponse {
                 payload: Some(v),

@@ -3,7 +3,7 @@ use tauri::InvokeError;
 use crate::{
     commands::command_utils::{CommandResponseComposable, SqliteCommandResponse},
     connection::sqlite_connection::get_sqlite_handle,
-    model::{model_common::ModelCommon, comment::Comment},
+    model::{comment::Comment, model_common::ModelCommon},
 };
 
 #[tauri::command]
@@ -22,11 +22,7 @@ pub async fn cmd_update_comment_content_by_node_name(
     content: String,
 ) -> Result<SqliteCommandResponse<usize>, InvokeError> {
     Ok(SqliteCommandResponse::to_command_response(
-        Comment::update_comment_content_by_node_name(
-            &get_sqlite_handle(),
-            &node_name,
-            &content,
-        ),
+        Comment::update_comment_content_by_node_name(&get_sqlite_handle(), &node_name, &content),
     ))
 }
 
@@ -49,9 +45,8 @@ pub async fn cmd_delete_comment_by_node_name(
 }
 
 #[tauri::command]
-pub async fn cmd_read_list_comment(
-) -> Result<SqliteCommandResponse<Vec<Comment>>, InvokeError> {
-    Ok(Vec::<Comment>::to_command_response(
-        Comment::read_list(&get_sqlite_handle()),
-    ))
+pub async fn cmd_read_list_comment() -> Result<SqliteCommandResponse<Vec<Comment>>, InvokeError> {
+    Ok(Vec::<Comment>::to_command_response(Comment::read_list(
+        &get_sqlite_handle(),
+    )))
 }

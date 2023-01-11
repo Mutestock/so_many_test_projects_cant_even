@@ -3,7 +3,7 @@ use tauri::InvokeError;
 use crate::{
     commands::command_utils::{CommandResponseComposable, SqliteCommandResponse},
     connection::sqlite_connection::get_sqlite_handle,
-    model::{model_common::ModelCommon, image::Image},
+    model::{image::Image, model_common::ModelCommon},
 };
 
 #[tauri::command]
@@ -37,8 +37,7 @@ pub async fn cmd_delete_image(
 }
 
 #[tauri::command]
-pub async fn cmd_read_list_image() -> Result<SqliteCommandResponse<Vec<Image>>, InvokeError>
-{
+pub async fn cmd_read_list_image() -> Result<SqliteCommandResponse<Vec<Image>>, InvokeError> {
     Ok(Vec::<Image>::to_command_response(Image::read_list(
         &get_sqlite_handle(),
     )))

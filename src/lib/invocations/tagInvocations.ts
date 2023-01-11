@@ -21,7 +21,7 @@ export class TagInvocation {
 
     public static async readListTag(): Promise<TagInvocation[]> {
         let res = await invoke("cmd_read_list_tag", {}) as any[];
-        return res.map(x => new TagInvocation(x.name));
+        return res.map(x => new TagInvocation(x.payload.name));
     }
 
     public static async updateTag(oldTagName: string, newTagName: string): Promise<void> {
