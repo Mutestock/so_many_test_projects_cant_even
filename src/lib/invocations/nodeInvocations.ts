@@ -68,7 +68,7 @@ export class NodeInvocation {
         let res = invoke("cmd_read_nodes_by_category", {
             category: category
         }) as any;
-        return res.map(x => new NodeInvocation(
+        return res.map((x: { name: string; dateAdded: string; dateModified: string; primaryImagePath: string; category: string; }) => new NodeInvocation(
             x.name,
             x.dateAdded,
             x.dateModified,
@@ -79,7 +79,7 @@ export class NodeInvocation {
 
     public static async readNodeListToggledOn(): Promise<NodeInvocation[]> {
         let res = invoke("cmd_read_list_toggled_on", {}) as any;
-        return res.map(x => new NodeInvocation(
+        return res.map((x: { name: string; dateAdded: string; dateModified: string; primaryImagePath: string; category: string; }) => new NodeInvocation(
             x.name,
             x.dateAdded,
             x.dateModified,
