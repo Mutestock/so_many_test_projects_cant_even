@@ -2,6 +2,7 @@
     import { allNodesWithCategoriesTurnedOn } from "$lib/stores/overviewStore";
     import CategoryToggle from "$lib/CategoryToggle.svelte";
     import { onDestroy } from "svelte";
+    import OverviewSidePanel from "$lib/OverviewSidePanel.svelte";
 
     let _allNodesWithCategoriesTurnedOn;
 
@@ -39,10 +40,15 @@
         {/each}
     </table>
 </div>
+<div class="right-side-overview">
+    <div>
+        <OverviewSidePanel />
+    </div>
+</div>
 
+<style lang=scss>
+    $sidebar-background-color:  #0f0f0f98;
 
-
-<style lang="scss">
     .toggle-container {
         width: 100%;
         align-self: stretch;
@@ -54,15 +60,28 @@
     }
 
     .toggle-container-outer {
-        width: 25%;
+        top: 0;
+        max-width: 10%;
+        min-width: 200px;
         float: left;
         display: inline;
+        background-color: $sidebar-background-color;
     }
 
     .content-container {
-        width: 50%;
-        margin: 0 auto;
         display: inline;
         float: left;
+        align-self: auto;
+        justify-content: center;
+    }
+
+    .right-side-overview {
+        position: fixed;
+        right: 0;
+        bottom: 0;
+        top: 0;
+        background: $sidebar-background-color;
+        float: left;
+        width: 20%
     }
 </style>
