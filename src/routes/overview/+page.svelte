@@ -15,11 +15,7 @@
     });
 </script>
 
-<div class="toggle-container-outer ">
-    <div class="toggle-container">
 <CategoryToggle />
-</div>
-</div>
 <div class="content-container">
     <p>Nodes:</p>
     <table>
@@ -40,9 +36,7 @@
         {/each}
     </table>
 </div>
-<div class="right-side-overview">
-    <OverviewSidePanel />
-</div>
+<OverviewSidePanel />
 
 <style lang="scss">
     .content-container {
@@ -50,34 +44,5 @@
         float: left;
         align-self: auto;
         justify-content: center;
-    }
-    $sidebar-background-color: #0f0f0f98;
-
-    .right-side-overview {
-        position: fixed;
-        right: 0;
-        bottom: 0;
-        top: 0;
-        background: $sidebar-background-color;
-        float: left;
-        width: 20%;
-    }
-    $sidebar-background-color: #0f0f0f98;
-    .toggle-container-outer {
-        top: 0;
-        max-width: 10%;
-        min-width: 200px;
-        float: left;
-        display: inline;
-        background-color: $sidebar-background-color;
-    }
-    .toggle-container {
-        width: 100%;
-        align-self: stretch;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: flex-start;
-        float: left;
     }
 </style>

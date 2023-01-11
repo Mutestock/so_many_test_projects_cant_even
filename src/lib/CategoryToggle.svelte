@@ -42,6 +42,8 @@
     });
 </script>
 
+<div class="toggle-container-outer ">
+    <div class="toggle-container">
         {#each allCategories as category}
             <label
                 class="category-input"
@@ -54,10 +56,29 @@
                 {category.name}
             </label>
         {/each}
+    </div>
+</div>
 
 <style lang="scss">
-
     .category-input {
         color: var(--color, black);
+    }
+    $sidebar-background-color: #0f0f0f98;
+    .toggle-container-outer {
+        top: 0;
+        max-width: 10%;
+        min-width: 200px;
+        float: left;
+        display: inline;
+        background-color: $sidebar-background-color;
+    }
+    .toggle-container {
+        width: 100%;
+        align-self: stretch;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        float: left;
     }
 </style>
