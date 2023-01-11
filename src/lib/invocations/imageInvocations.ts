@@ -39,8 +39,8 @@ export class ImageInvocation {
     }
 
     public static async readListImage(): Promise<ImageInvocation[]> {
-        let res = await invoke("cmd_read_list_image", {}) as any[];
-        return res.map(x => new ImageInvocation(
+        let res = await invoke("cmd_read_list_image", {}) as any;
+        return res.payload.map(x => new ImageInvocation(
             x.payload.imageTitle,
             x.payload.imagePath,
             x.payload.dateAdded,

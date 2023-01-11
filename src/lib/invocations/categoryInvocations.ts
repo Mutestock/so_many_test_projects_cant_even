@@ -1,27 +1,5 @@
 import { invoke } from "@tauri-apps/api"
 
-// Again, currently typescript type checking just isn't clicking with svelte for some reason.
-
-export async function invokeReadAllCategories() {
-    let response = await invoke("cmd_read_list_category", {})
-    return response.payload
-}
-
-export async function invokeToggleCategory(category) {
-    let response = await invoke("cmd_category_toggle_visibility", {
-        categoryName: category,
-    });
-    return response.payload
-}
-
-export async function invokeCreateCategory(newCategoryName, colorCodeHex) {
-    let response = await invoke("cmd_create_category", {
-        newCategoryName: newCategoryName,
-        colorCodeHex: colorCodeHex
-    });
-    return response.payload
-}
-
 
 export class CategoryInvocation {
     name: string;
@@ -41,7 +19,7 @@ export class CategoryInvocation {
         })
     }
 
-    public static async readcategory(categoryName): Promise<CategoryInvocation> {
+    public static async readCategory(categoryName): Promise<CategoryInvocation> {
         let res = await invoke("cmd_read_category", {
             categoryName: categoryName
         }) as any;
@@ -56,13 +34,12 @@ export class CategoryInvocation {
     }
     
     public static async readListCategory(): Promise<CategoryInvocation[]> {
-        let res = await invoke("cmd_read_list_category", {}) as any[];
-        console.log(res);
-        
+        let res = await invoke("cmd_read_list_category", {}) as any;
+
         return res.payload.map(x => new CategoryInvocation(
             x.name,
-            x.colorCodeHex,
-            x.visibilityToggledOn
+            x.color_code_hex,
+            x.visibility_toggled_on
         ))
     }
 

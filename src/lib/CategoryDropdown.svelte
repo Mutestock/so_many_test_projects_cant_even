@@ -1,10 +1,13 @@
 <script>
     import { onMount } from "svelte";
     import { currentlySelectedCategory } from "$lib/stores/creationStore";
-    import { CategoryInvocation, invokeReadAllCategories } from "$lib/invocations/categoryInvocations";
+    import { CategoryInvocation } from "$lib/invocations/categoryInvocations";
+
     let selectedCategory;
-    $: currentlySelectedCategory.set(selectedCategory);
     let allCategories = [];
+
+    $: currentlySelectedCategory.set(selectedCategory);
+
     onMount(async () => {
         allCategories = await CategoryInvocation.readListCategory();
     });

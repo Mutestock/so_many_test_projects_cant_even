@@ -18,7 +18,7 @@ class EventRerouter {
         this.rerouteUrl = rerouteUrl;
     }
 
-    reroute() {
+    reroute(): void {
         goto(this.rerouteUrl)
     }
 }
@@ -35,7 +35,7 @@ const EventRerouters = {
 }
 
 
-function handleMenuEventRedirection(menuEventName: string) {
+function handleMenuEventRedirection(menuEventName: string): void {
     let caughtEvent: EventRerouter | null = EventRerouters[menuEventName];
     if (caughtEvent == null || caughtEvent == undefined) {
         return;

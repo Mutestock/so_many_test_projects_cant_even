@@ -1,6 +1,5 @@
 <script>
     import NavBar from "$lib/NavBar.svelte";
-    import { invoke } from "@tauri-apps/api/tauri";
     import { open } from "@tauri-apps/api/dialog";
     import { appDataDir } from "@tauri-apps/api/path";
     import { invokeWriteLog, LogLevel } from "$lib/log";
@@ -8,6 +7,8 @@
     import { currentlySelectedCategory } from "$lib/stores/creationStore";
     import { onDestroy } from "svelte";
     import { copyFile, BaseDirectory } from "@tauri-apps/api/fs";
+    import { NodeInvocation } from "$lib/invocations/nodeInvocations";
+    import { ImageInvocation } from "$lib/invocations/imageInvocations";
 
     let nodeName = "";
     let currentlySelectedCategoryValue;
@@ -15,15 +16,14 @@
     let imageAppended = false;
 
     async function newNode() {
-        invoke("cmd_create_node", {
-            category: currentlySelectedCategoryValue,
-            name: nodeName,
-        });
+        await NodeInvocation.createNode(
+            currentlySelectedCategoryValue,
+            nodeName
+        );
+
         if (imageAppended) {
-            invoke("cmd_create_image", {
-                imageTitle: `${nodeName}_primary_image`,
-                nodeName: nodeName,
-            });
+            let imageTitle = `${nodeName}_primary_image`;
+            await ImageInvocation.createImage(imageTitle, nodeName);
         }
         await invokeWriteLog(
             LogLevel.Info,
@@ -38,14 +38,17 @@
         currentlySelectedCategoryValue = value;
     });
 
-    async function appendImage() {
+    async function appendImage()  {
         let selectedPath = await open({
             directory: false,
             multiple: false,
             defaultPath: await appDataDir(),
         });
         if (!selectedPath) {
-            invokeWriteLog(LogLevel.Info, "Attempted node image append was empty");
+            await invokeWriteLog(
+                LogLevel.Info,
+                "Attempted node image append was empty"
+            );
         } else {
             let appDataDirectory = await appDataDir();
             let imagesDirectory = appDataDirectory + "images";

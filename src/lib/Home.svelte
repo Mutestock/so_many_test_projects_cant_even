@@ -1,4 +1,4 @@
-<script lang>
+<script>
   import { invoke } from "@tauri-apps/api/tauri";
   import { onMount } from "svelte";
 
@@ -10,7 +10,7 @@
   }
 
   async function sqliteGetCategories() {
-    let response = await invoke("cmd_read_list_category", {})
+    let response = await invoke("cmd_read_list_category", {});
     oneCategory = JSON.stringify(response.payload);
   }
 

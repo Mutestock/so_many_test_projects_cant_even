@@ -1,12 +1,9 @@
 <script>
     import { onMount } from "svelte";
-    import {
-        invokeReadAllCategories,
-        invokeToggleCategory,
-    } from "./invocations/categoryInvocations";
-    import { invokeReadAllNodesWithToggledOnCategories } from "./invocations/nodeInvocations";
     import { cloneDeep } from "lodash";
     import { allNodesWithCategoriesTurnedOn } from "./stores/overviewStore";
+    import { CategoryInvocation } from "./invocations/categoryInvocations";
+    import { NodeInvocation } from "./invocations/nodeInvocations";
 
     let _allNodesWithCategoriesTurnedOn = [];
     let allCategories = [];
@@ -17,12 +14,12 @@
     $: {
         allCategories.every((category, index) => {
             if (
-                allCategoriesBuffer[index].visibility_toggled_on !=
-                category.visibility_toggled_on
+                allCategoriesBuffer[index].visibilityToggledOn !=
+                category.visibilityToggledOn
             ) {
-                invokeToggleCategory(category.name).then(() => refreshNodes());
-                allCategoriesBuffer[index].visibility_toggled_on =
-                    category.visibility_toggled_on;
+                CategoryInvocation.categoryToggleVisibility(category.name).then(() => refreshNodes());
+                allCategoriesBuffer[index].visibilityToggledOn =
+                    category.visibilityToggledOn;
                 return false;
             }
             return true;
@@ -33,19 +30,27 @@
 
     async function refreshNodes() {
         _allNodesWithCategoriesTurnedOn =
-            await invokeReadAllNodesWithToggledOnCategories();
+            await NodeInvocation.readNodeListToggledOn();
     }
 
     onMount(async () => {
-        allCategories = await invokeReadAllCategories();
+        allCategories = await CategoryInvocation.readListCategory();
         allCategoriesBuffer = cloneDeep(allCategories);
         refreshNodes();
     });
 </script>
 
 {#each allCategories as category}
-    <label>
-        <input type="checkbox" bind:checked={category.visibility_toggled_on} />
+    <label class="category-input" style="--color:{category.colorCodeHex}">
+        <input type="checkbox" bind:checked={category.visibilityToggledOn} />
         {category.name}
     </label>
 {/each}
+
+
+<style lang="scss">
+    .category-input {
+        color: var(--color, black);
+    }
+
+</style>

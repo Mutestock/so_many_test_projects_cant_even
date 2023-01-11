@@ -9,8 +9,6 @@ export enum LogLevel {
     Fatal = "Fatal"
 };
 
-
-
 export async function invokeWriteLog(level: LogLevel, msg: string) {
     await invoke('cmd_log', {
         level: level,

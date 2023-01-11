@@ -1,19 +1,19 @@
 <script>
-    import { invokeCreateCategory } from "$lib/invocations/categoryInvocations";
+    import { CategoryInvocation } from "$lib/invocations/categoryInvocations";
     import { invokeWriteLog, LogLevel } from "$lib/log";
+    // @ts-ignore
     import { HsvPicker } from "svelte-color-picker";
 
     let categoryName = "";
     let hexColor = "";
 
-    async function newCategory() {
-        await invokeCreateCategory(categoryName, hexColor);
+    async function newCategory(){
+        await CategoryInvocation.createCategory(categoryName, hexColor);
         await invokeWriteLog(LogLevel.Info, `New category created: ${categoryName}`)
     }
 
     function colorCallback(rgba) {
         hexColor = rgbToHex(rgba.detail)
-        console.log(hexColor);
     }
 
     function rgbToHex(rgba) {

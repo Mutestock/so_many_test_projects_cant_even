@@ -1,10 +1,5 @@
 import { invoke } from "@tauri-apps/api"
 
-export async function invokeReadAllNodesWithToggledOnCategories() {
-    let response = await invoke("cmd_read_list_toggled_on", {})
-    return response.payload
-}
-
 
 export class NodeInvocation {
     name: string;
@@ -13,7 +8,8 @@ export class NodeInvocation {
     primaryImagePath: string | null;
     category: string;
 
-    constructor(name: string,
+    constructor(
+        name: string,
         dateAdded: string,
         dateModified: string,
         primaryImagePath: string | null,
@@ -34,7 +30,7 @@ export class NodeInvocation {
     }
 
     public static async readNode(name: string): Promise<NodeInvocation> {
-        let res = invoke("cmd_read_node", {
+        let res = await invoke("cmd_read_node", {
             name: name
         }) as any;
         res = res.payload;
@@ -55,36 +51,37 @@ export class NodeInvocation {
     }
 
     public static async readNodeList(): Promise<NodeInvocation[]> {
-        let res = invoke("cmd_read_list_node", {}) as any;
+        let res = await invoke("cmd_read_list_node", {}) as any;
         return res.payload.map(x => new NodeInvocation(
             x.name,
-            x.dateAdded,
-            x.dateModified,
-            x.primaryImagePath,
+            x.date_added,
+            x.date_modified,
+            x.primary_image_path,
             x.category
         ))
     }
 
     public static async readNodesByCategory(category: string): Promise<NodeInvocation[]> {
-        let res = invoke("cmd_read_nodes_by_category", {
+        let res = await invoke("cmd_read_nodes_by_category", {
             category: category
         }) as any;
         return res.payload.map(x => new NodeInvocation(
             x.name,
-            x.dateAdded,
-            x.dateModified,
-            x.primaryImagePath,
+            x.date_added,
+            x.date_modified,
+            x.primary_image_path,
             x.category
         ))
     }
 
     public static async readNodeListToggledOn(): Promise<NodeInvocation[]> {
-        let res = invoke("cmd_read_list_toggled_on", {}) as any;
+        let res = await invoke("cmd_read_list_toggled_on", {}) as any;
+
         return res.payload.map(x => new NodeInvocation(
             x.name,
-            x.dateAdded,
-            x.dateModified,
-            x.primaryImagePath,
+            x.date_added,
+            x.date_modified,
+            x.primary_image_path,
             x.category
         ))
     }
