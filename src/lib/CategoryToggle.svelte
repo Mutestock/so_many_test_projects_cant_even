@@ -17,7 +17,9 @@
                 allCategoriesBuffer[index].visibilityToggledOn !=
                 category.visibilityToggledOn
             ) {
-                CategoryInvocation.categoryToggleVisibility(category.name).then(() => refreshNodes());
+                CategoryInvocation.categoryToggleVisibility(category.name).then(
+                    () => refreshNodes()
+                );
                 allCategoriesBuffer[index].visibilityToggledOn =
                     category.visibilityToggledOn;
                 return false;
@@ -26,7 +28,7 @@
         });
     }
 
-    $: allNodesWithCategoriesTurnedOn.set(_allNodesWithCategoriesTurnedOn)
+    $: allNodesWithCategoriesTurnedOn.set(_allNodesWithCategoriesTurnedOn);
 
     async function refreshNodes() {
         _allNodesWithCategoriesTurnedOn =
@@ -40,15 +42,21 @@
     });
 </script>
 
-{#each allCategories as category}
-    <label class="category-input" style="--color:{category.colorCodeHex}">
-        <input type="checkbox" bind:checked={category.visibilityToggledOn} />
-        {category.name}
-    </label>
-{/each}
-
+        {#each allCategories as category}
+            <label
+                class="category-input"
+                style="--color:{category.colorCodeHex}"
+            >
+                <input
+                    type="checkbox"
+                    bind:checked={category.visibilityToggledOn}
+                />
+                {category.name}
+            </label>
+        {/each}
 
 <style lang="scss">
+
     .category-input {
         color: var(--color, black);
     }

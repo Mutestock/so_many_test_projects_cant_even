@@ -1,1 +1,6 @@
-<p>OverviewSidePanelGoesHere</p>
+<div>
+    <p>OverviewSidePanelGoesHere</p>
+</div>
+
+<style lang="scss">
+</style>
