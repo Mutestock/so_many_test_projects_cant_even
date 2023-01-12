@@ -53,8 +53,6 @@
 <svg
     on:mousemove={(e) => {
         if ((mouseIsDown == true)) {
-            console.log(mouseIsDown);
-            
             coords.set({ x: e.clientX, y: e.clientY });
         }
     }}
@@ -67,7 +65,7 @@
         mouseIsDown = false;
     }}
 >
-    <circle cx={$coords.x} cy={$coords.y} r={$size} />
+    <circle class="circle-vars" style="--color:green" cx={$coords.x} cy={$coords.y} r={$size} />
 </svg>
 
 <OverviewSidePanel />
@@ -78,6 +76,10 @@
         float: left;
         align-self: auto;
         justify-content: center;
+    }
+
+    .circle-vars {
+        fill: var(--color, black);
     }
 
     svg {

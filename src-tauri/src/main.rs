@@ -6,7 +6,7 @@
 use mindmap::commands::model_commands::{
     category_commands::*, comment_commands::*, image_commands::*, node_commands::*, tag_commands::*,
 };
-use mindmap::commands::{command_utils::*, sqlite_commands::*};
+use mindmap::commands::{command_utils::*, sqlite_commands::*, node_visual_commands::*};
 use mindmap::connection::{
     connection_common::MindmapConnector, initialize, sqlite_connection::SQLITE_CONNECTOR,
 };
@@ -42,7 +42,8 @@ fn main() {
             cmd_create_tag,
             cmd_read_list_tag,
             cmd_delete_tag,
-            cmd_update_tag
+            cmd_update_tag,
+            cmd_read_list_node_visual
         ])
         .setup(|_| {
             SQLITE_CONNECTOR

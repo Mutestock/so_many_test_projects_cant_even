@@ -5,3 +5,4 @@ pub mod category;
 pub mod image;
 pub mod tag;
 pub mod node_tag;
+pub mod hybrids;
