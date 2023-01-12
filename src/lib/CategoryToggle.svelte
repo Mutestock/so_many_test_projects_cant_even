@@ -4,8 +4,10 @@
     import { allNodesWithCategoriesTurnedOn } from "./stores/overviewStore";
     import { CategoryInvocation } from "./invocations/categoryInvocations";
     import { NodeInvocation } from "./invocations/nodeInvocations";
+    import { NodeVisualInvocation } from "./invocations/nodeVisualInvocations";
 
     let _allNodesWithCategoriesTurnedOn = [];
+    let nodeVisuals = [];
     let allCategories = [];
     let allCategoriesBuffer = [];
 
@@ -33,6 +35,8 @@
     async function refreshNodes() {
         _allNodesWithCategoriesTurnedOn =
             await NodeInvocation.readNodeListToggledOn();
+
+        nodeVisuals = await NodeVisualInvocation.readNodeVisualList();
     }
 
     onMount(async () => {

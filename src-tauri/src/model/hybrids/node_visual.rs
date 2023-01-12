@@ -16,7 +16,7 @@ impl NodeVisual {
         }
     }
 
-    pub fn read_list(
+    pub fn read_list_where_toggled(
         connection: &rusqlite::Connection,
     ) -> Result<Vec<NodeVisual>, rusqlite::Error> {
         connection
@@ -25,7 +25,8 @@ impl NodeVisual {
             SELECT n.name, c.color_code_hex 
             FROM Node n 
             INNER JOIN Category c
-            ON n.category_name = c.category_name;
+            ON n.category_name = c.category_name
+            WHERE c.visibility_toggled_on;
         ",
             )?
             .query_map([], |row| Ok(NodeVisual::new(row.get(0)?, row.get(1)?)))?
