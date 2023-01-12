@@ -16,7 +16,7 @@ impl NodeVisual {
         }
     }
 
-    pub fn read_list_where_toggled(
+    pub fn read_list_toggled_on(
         connection: &rusqlite::Connection,
     ) -> Result<Vec<NodeVisual>, rusqlite::Error> {
         connection

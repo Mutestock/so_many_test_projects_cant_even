@@ -10,6 +10,6 @@ use super::command_utils::{CommandResponseComposable, SqliteCommandResponse};
 pub fn cmd_read_list_node_visual(
 ) -> Result<SqliteCommandResponse<Vec<NodeVisual>>, InvokeError> {
     Ok(Vec::<NodeVisual>::to_command_response(
-        NodeVisual::read_list_where_toggled(&get_sqlite_handle()),
+        NodeVisual::read_list_toggled_on(&get_sqlite_handle()),
     ))
 }
