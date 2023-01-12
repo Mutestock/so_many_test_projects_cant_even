@@ -60,10 +60,10 @@
 </div>
 
 <style lang="scss">
+    $sidebar-background-color: #0f0f0f98;
     .category-input {
         color: var(--color, black);
     }
-    $sidebar-background-color: #0f0f0f98;
     .toggle-container-outer {
         top: 0;
         max-width: 10%;
